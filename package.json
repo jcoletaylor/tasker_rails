@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "standard": "^16.0.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0"
+  }
+}

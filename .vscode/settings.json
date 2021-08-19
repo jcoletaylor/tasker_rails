@@ -1,0 +1,5 @@
+{
+    "standard.autoFixOnSave": true,
+    "standard.usePackageJson": true,
+    "eslint.format.enable": true
+}
