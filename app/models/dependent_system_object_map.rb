@@ -24,9 +24,9 @@
 #  dependent_system_object_maps_dependent_system_two_id_foreign  (dependent_system_two_id => dependent_systems.dependent_system_id)
 #
 class DependentSystemObjectMap < ApplicationRecord
-  set_primary_key :dependent_system_object_map_id
-  belongs_to :dependent_system_one
-  belongs_to :dependent_system_two
+  self.primary_key = :dependent_system_object_map_id
+  belongs_to :dependent_system_one, class_name: 'DependentSystem'
+  belongs_to :dependent_system_two, class_name: 'DependentSystem'
   validates :remote_id_one, presence: true
   validates :remote_id_two, presence: true
   validates :dependent_system_one_id, presence: true
@@ -51,12 +51,12 @@ class DependentSystemObjectMap < ApplicationRecord
         dependent_system_one_id: system_two.dependent_system_id,
         dependent_system_two_id: system_one.dependent_system_id
       )
-    )
+    ).first
     inst ||= create(
       remote_id_one: system_one_id,
       remote_id_two: system_two_id,
-      dependent_system_one_id: system_one.dependent_system_id,
-      dependent_system_two_id: system_two.dependent_system_id
+      dependent_system_one: system_one,
+      dependent_system_two: system_two
     )
     inst
   end

@@ -22,7 +22,7 @@
 #  task_annotations_task_id_foreign             (task_id => tasks.task_id)
 #
 class TaskAnnotation < ApplicationRecord
-  set_primary_key :task_annotation_id
+  self.primary_key =  :task_annotation_id
   belongs_to :task
   belongs_to :annotation_type
 

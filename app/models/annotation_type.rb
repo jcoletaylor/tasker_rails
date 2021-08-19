@@ -14,6 +14,6 @@
 #  annotation_types_name_unique  (name) UNIQUE
 #
 class AnnotationType < ApplicationRecord
-  set_primary_key :annotation_type_id
+  self.primary_key =  :annotation_type_id
   validates :name, presence: true, uniqueness: true
 end

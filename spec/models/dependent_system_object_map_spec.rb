@@ -26,5 +26,23 @@
 require 'rails_helper'
 
 RSpec.describe DependentSystemObjectMap, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'find or create' do
+    it 'should be able to find or create in either order' do
+      system_name_one = 'first_system'
+      system_name_two = 'second_system'
+      system_one_id = 'asdgasdfasdfsadf'
+      system_two_id = 3
+      system_mapping = DependentSystemObjectMap.find_or_create(
+        system_name_one, system_one_id,
+        system_name_two, system_two_id
+      )
+
+      expect(system_mapping.dependent_system_object_map_id).not_to be_nil
+      system_mapping_two = DependentSystemObjectMap.find_or_create(
+        system_name_two, system_two_id,
+        system_name_one, system_one_id
+      )
+      expect(system_mapping_two.dependent_system_object_map_id).to eq(system_mapping.dependent_system_object_map_id)
+    end
+  end
 end

@@ -37,7 +37,7 @@ require 'digest'
 #  tasks_named_task_id_foreign  (named_task_id => named_tasks.named_task_id)
 #
 class Task < ApplicationRecord
-  set_primary_key :task_id
+  self.primary_key =  :task_id
   belongs_to :named_task
 
   validates :named_task_id, presence: true

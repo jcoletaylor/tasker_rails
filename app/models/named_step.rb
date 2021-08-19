@@ -20,7 +20,7 @@
 #  named_steps_dependent_system_id_foreign  (dependent_system_id => dependent_systems.dependent_system_id)
 #
 class NamedStep < ApplicationRecord
-  set_primary_key :named_step_id
+  self.primary_key =  :named_step_id
   belongs_to :dependent_system
   validates :name, presence: true, uniqueness: { scope: :dependent_system_id }
 end

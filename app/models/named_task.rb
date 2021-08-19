@@ -14,6 +14,6 @@
 #  named_tasks_name_unique  (name) UNIQUE
 #
 class NamedTask < ApplicationRecord
-  set_primary_key :named_task_id
+  self.primary_key =  :named_task_id
   validates :name, presence: true, uniqueness: true
 end

@@ -14,6 +14,7 @@
 #  dependent_systems_name_unique  (name) UNIQUE
 #
 class DependentSystem < ApplicationRecord
-  set_primary_key :dependent_system_id
+  self.primary_key =  :dependent_system_id
+  has_many :dependent_system_object_maps, dependent: :destroy
   validates :name, presence: true, uniqueness: true
 end

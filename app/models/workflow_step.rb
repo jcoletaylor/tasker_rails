@@ -36,7 +36,7 @@
 #  workflow_steps_task_id_foreign             (task_id => tasks.task_id)
 #
 class WorkflowStep < ApplicationRecord
-  set_primary_key :workflow_step_id
+  self.primary_key =  :workflow_step_id
   belongs_to :task
   belongs_to :named_step
   belongs_to :depends_on_step
