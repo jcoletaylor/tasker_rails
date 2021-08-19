@@ -29,19 +29,18 @@ class NamedTasksNamedStep < ApplicationRecord
   validates :named_step_id, presence: true, uniqueness: { scope: :named_task_id }
 
   def self.find_or_create(
-    named_task, named_step, options = {
-      default_retry_limit: 3, default_retryable: true,
-                                                           skippable: false
+    named_task,
+    named_step,
+    options = {
+      default_retry_limit: 3,
+      default_retryable: true,
+      skippable: false
     }
   )
     inst = where(named_task_id: named_task.named_task_id, named_step_id: named_step.named_step_id).first
-    unless inst
-      create_options = {
-        named_task_id: named_task.named_task_id,
-        named_step_id: named_step.named_step_id
-      }.merge(options)
-      inst = create(create_options)
-    end
+
+    inst ||= create({ named_task_id: named_task.named_task_id, named_step_id: named_step.named_step_id }.merge(options))
+
     inst
   end
 end

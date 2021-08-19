@@ -24,6 +24,40 @@
 #  dependent_system_object_maps_dependent_system_two_id_foreign  (dependent_system_two_id => dependent_systems.dependent_system_id)
 #
 class DependentSystemObjectMap < ApplicationRecord
+  set_primary_key :dependent_system_object_map_id
   belongs_to :dependent_system_one
   belongs_to :dependent_system_two
+  validates :remote_id_one, presence: true
+  validates :remote_id_two, presence: true
+  validates :dependent_system_one_id, presence: true
+  validates :dependent_system_two_id, presence: true
+
+  def self.find_or_create(
+    system_one_name, system_one_id,
+    system_two_name, system_two_id
+  )
+    system_one = DependentSystem.find_or_create_by!(name: system_one_name)
+    system_two = DependentSystem.find_or_create_by!(name: system_two_name)
+    # these could be in either order
+    inst = where(
+      remote_id_one: system_one_id,
+      remote_id_two: system_two_id,
+      dependent_system_one_id: system_one.dependent_system_id,
+      dependent_system_two_id: system_two.dependent_system_id
+    ).or(
+      where(
+        remote_id_one: system_two_id,
+        remote_id_two: system_one_id,
+        dependent_system_one_id: system_two.dependent_system_id,
+        dependent_system_two_id: system_one.dependent_system_id
+      )
+    )
+    inst ||= create(
+      remote_id_one: system_one_id,
+      remote_id_two: system_two_id,
+      dependent_system_one_id: system_one.dependent_system_id,
+      dependent_system_two_id: system_two.dependent_system_id
+    )
+    inst
+  end
 end
