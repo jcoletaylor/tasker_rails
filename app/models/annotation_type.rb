@@ -14,6 +14,7 @@
 #  annotation_types_name_unique  (name) UNIQUE
 #
 class AnnotationType < ApplicationRecord
-  self.primary_key =  :annotation_type_id
+  self.primary_key = :annotation_type_id
+  has_many :task_annotations, dependent: :destroy
   validates :name, presence: true, uniqueness: true
 end

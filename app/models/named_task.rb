@@ -14,6 +14,7 @@
 #  named_tasks_name_unique  (name) UNIQUE
 #
 class NamedTask < ApplicationRecord
-  self.primary_key =  :named_task_id
+  self.primary_key = :named_task_id
+  has_many :tasks, dependent: :destroy
   validates :name, presence: true, uniqueness: true
 end

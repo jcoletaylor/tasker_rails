@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'rubocop/rake_task'
 
-task default: [:rubocop]
+task default: [:lint]
 
-desc 'Run rubocop'
-RuboCop::RakeTask.new(:rubocop) do |task|
+desc 'Run rubocop lint'
+RuboCop::RakeTask.new(:lint) do |task|
   task.patterns = ['**/*.rb']
   task.fail_on_error = false
   task.options = ['--auto-correct-all']

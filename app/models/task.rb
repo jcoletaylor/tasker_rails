@@ -37,14 +37,15 @@ require 'digest'
 #  tasks_named_task_id_foreign  (named_task_id => named_tasks.named_task_id)
 #
 class Task < ApplicationRecord
-  self.primary_key =  :task_id
+  self.primary_key = :task_id
+  after_initialize :init_defaults, if: :new_record?
   belongs_to :named_task
 
   validates :named_task_id, presence: true
   validates :context, presence: true
   validates :identity_hash, presence: true
   validates :requested_at, presence: true
-  validates :status, presence: true
+  validates :status, presence: true, in: Constants::VALID_TASK_STATUSES
   validate :unique_identity_hash
 
   delegate :name, to: :named_task
@@ -52,20 +53,39 @@ class Task < ApplicationRecord
   private
 
   def unique_identity_hash
-    opt_string = identity_options.to_json
-    self.identity_hash ||= Digest::SHA256.hexdigest(opt_string)
+    self.identity_hash = Digest::SHA256.hexdigest(identity_options.to_json)
     alt_inst = self.class.where(identity_hash: identity_hash).first
-    errors.add(:identity_hash, 'has already been used') if alt_inst
+    errors.add(:identity_hash, 'is identical to a request made in the last minute') if alt_inst
   end
 
   def identity_options
+    # a task can be described as identical to a prior request if
+    # it has the same name, initiator, source system, reason
+    # bypass steps, and critically, the same identical context for the request
+    # if all of these are the same, and it was requested within the same minute
+    # then we can assume some client side or queue side duplication is happening
     {
       name: name,
-      initiator: initiator || 'unknown',
-      source_system: source_system || 'unknown',
+      initiator: initiator,
+      source_system: source_system,
       context: context,
-      reason: reason || 'unknown',
-      bypass_steps: bypass_steps || []
+      reason: reason,
+      bypass_steps: bypass_steps || [],
+      # not allowing structurally identical requests within the same minute
+      # this is a fuzzy match of course, at the 59 / 00 mark there could be overlap
+      # but this feels like a pretty good level of identity checking
+      # without being exhaustive
+      requested_at: requested_at.to_s(:date_hour_minute)
     }
+  end
+
+  def init_defaults
+    return unless new_record?
+
+    self.status ||= Constants::TaskStatuses::PENDING
+    self.requested_at ||= Time.zone.now
+    self.initiator ||= Constants::UNKNOWN
+    self.source_system ||= Constants::UNKNOWN
+    self.reason ||= Constants::UNKNOWN
   end
 end

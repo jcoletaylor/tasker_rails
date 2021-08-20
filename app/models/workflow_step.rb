@@ -36,10 +36,10 @@
 #  workflow_steps_task_id_foreign             (task_id => tasks.task_id)
 #
 class WorkflowStep < ApplicationRecord
-  self.primary_key =  :workflow_step_id
+  self.primary_key = :workflow_step_id
   belongs_to :task
   belongs_to :named_step
-  belongs_to :depends_on_step
+  belongs_to :depends_on_step, class_name: 'WorkflowStep'
 
   validates :task_id, presence: true
   validates :named_step_id, presence: true
