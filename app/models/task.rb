@@ -45,17 +45,48 @@ class Task < ApplicationRecord
   validates :context, presence: true
   validates :identity_hash, presence: true
   validates :requested_at, presence: true
-  validates :status, presence: true, in: Constants::VALID_TASK_STATUSES
+  validates :status, presence: true, inclusion: { in: Constants::VALID_TASK_STATUSES }
   validate :unique_identity_hash
+  before_validation :set_identity_hash
 
   delegate :name, to: :named_task
+
+  def self.create_with_defaults!(
+    task_name,
+    context,
+    status = Constants::TaskStatuses::PENDING,
+    requested_at = Time.zone.now,
+    initiator = Constants::UNKNOWN,
+    source_system = Constants::UNKNOWN,
+    reason = Constants::UNKNOWN,
+    complete = false,
+    tags = [],
+    bypass_steps = []
+  )
+    named_task = NamedTask.find_or_create_by!(name: task_name)
+    options = {
+      named_task: named_task,
+      named_task_id: named_task.named_task_id,
+      status: status,
+      initiator: initiator,
+      source_system: source_system,
+      context: context,
+      reason: reason,
+      bypass_steps: bypass_steps,
+      requested_at: requested_at,
+      complete: complete,
+      tags: tags
+    }
+    inst = create!(options)
+    inst
+  end
 
   private
 
   def unique_identity_hash
-    self.identity_hash = Digest::SHA256.hexdigest(identity_options.to_json)
-    alt_inst = self.class.where(identity_hash: identity_hash).first
-    errors.add(:identity_hash, 'is identical to a request made in the last minute') if alt_inst
+    set_identity_hash
+    inst = self.class.where(identity_hash: identity_hash).where.not(task_id: task_id).first
+    errors.add(:identity_hash, 'is identical to a request made in the last minute') if inst
   end
 
   def identity_options
@@ -87,5 +118,12 @@ class Task < ApplicationRecord
     self.initiator ||= Constants::UNKNOWN
     self.source_system ||= Constants::UNKNOWN
     self.reason ||= Constants::UNKNOWN
+    self.complete ||= false
+    self.tags ||= []
+    self.bypass_steps ||= []
+  end
+
+  def set_identity_hash
+    self.identity_hash = Digest::SHA256.hexdigest(identity_options.to_json)
   end
 end
