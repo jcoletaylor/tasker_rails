@@ -2,8 +2,7 @@
 
 module TaskHandlers
   class HandlerBase
-    attr_accessor :step_handler_class_map
-    attr_accessor :step_templates
+    attr_accessor :step_handler_class_map, :step_templates
 
     def initialize
       register_step_templates
@@ -134,7 +133,7 @@ module TaskHandlers
     end
 
     def enqueue_task(task)
-      # Use TaskRunnerJob here to send the task to Sidekiq
+      TaskRunnerJob.perform_later task.task_id
     end
 
     # override in sublcass
