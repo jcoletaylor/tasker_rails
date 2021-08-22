@@ -25,18 +25,33 @@ module TaskHandlers
 
     def get_sequence(task); end
 
-    def begin(task)
+    def start_task(task)
       raise Errors::ProceduralError, "task already complete for #{task.task_id}" if task.complete
 
       raise Errors::ProceduralError, "task is not pending for #{task.task_id}, status is #{task.status}" unless task.status == Constants::TaskStatuses::PENDING
 
+      # I don't need to re-run the validations here
       task.update_attribute(:status, Constants::TaskStatuses::IN_PROGRESS)
     end
 
-    def handle(task); end
+    def handle(task)
+      start_task(task)
+      sequence = get_sequence(task)
+      viable_steps = WorkflowStep.get_viable_steps(task, sequence)
+      steps = handle_viable_steps(task, sequence, viable_steps)
+      # get sequence again, updated
+      sequence = get_sequence(task)
+      more_viable_steps = WorkflowStep.get_viable_steps(task, sequence)
+      if more_viable_steps.length.positive?
+        # I don't need to re-run the validations here
+        task.update_attribute(:status, Constants::TaskStatuses::IN_PROGRESS)
+        handle(task)
+      end
+      finalize(task, sequence, steps)
+    end
 
     def handle_one_step(task, sequence, step)
-      handler = get_step_handler_class(step)
+      handler = get_step_handler(step)
       attempts = step.attempts || 0
       begin
         handler.handle(task, sequence, step)
@@ -62,7 +77,9 @@ module TaskHandlers
       steps
     end
 
-    def finalize(task, sequence, steps); end
+    def finalize(task, sequence, steps)
+      # TODO: write the finalization and annotation update logic
+    end
 
     def register_step_handler_function_classes
       self.step_handler_class_map = {}
@@ -71,7 +88,7 @@ module TaskHandlers
       end
     end
 
-    def get_step_handler_class(step)
+    def get_step_handler(step)
       raise Errors::ProceduralError, "No registered class for #{step.name}" unless step_handler_class_map[step.name]
 
       step_handler_class_map[step.name].to_s.camelize.constantize.new

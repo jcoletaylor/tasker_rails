@@ -100,4 +100,10 @@ class WorkflowStep < ApplicationRecord
       end
     named_steps
   end
+
+  def self.get_viable_steps(task, _sequence)
+    steps = where(task_id: task.task_id).all
+    # TODO: build the validation logic
+    steps
+  end
 end
