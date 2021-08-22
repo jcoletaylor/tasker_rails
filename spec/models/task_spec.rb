@@ -39,12 +39,13 @@ RSpec.describe Task, type: :model do
   describe 'task creation' do
     it 'should be able to create with defaults' do
       task = Task.create_with_defaults!('dummy_action', { some: :value })
-      expect(task).to be_valid
+      expect(task.save).to be_truthy
       expect(task.task_id).not_to be_nil
+      expect(task.identity_hash).not_to be_nil
       # should not be able to do the same thing again instantly
-      expect {
+      expect do
         Task.create_with_defaults!('dummy_action', { some: :value })
-      }.to raise_error(ActiveRecord::RecordInvalid)
+      end.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 end

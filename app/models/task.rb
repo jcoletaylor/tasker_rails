@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'digest'
-# frozen_string_literal: true
 
 # == Schema Information
 #
@@ -55,16 +54,16 @@ class Task < ApplicationRecord
     task_name,
     context,
     status = Constants::TaskStatuses::PENDING,
-    requested_at = Time.zone.now,
     initiator = Constants::UNKNOWN,
     source_system = Constants::UNKNOWN,
     reason = Constants::UNKNOWN,
     complete = false,
     tags = [],
-    bypass_steps = []
+    bypass_steps = [],
+    requested_at = Time.zone.now
   )
     named_task = NamedTask.find_or_create_by!(name: task_name)
-    options = {
+    inst = create!(
       named_task: named_task,
       named_task_id: named_task.named_task_id,
       status: status,
@@ -76,8 +75,7 @@ class Task < ApplicationRecord
       requested_at: requested_at,
       complete: complete,
       tags: tags
-    }
-    inst = create!(options)
+    )
     inst
   end
 
