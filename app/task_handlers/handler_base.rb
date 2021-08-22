@@ -3,14 +3,15 @@
 module TaskHandlers
   class HandlerBase
     attr_accessor :step_handler_class_map
+    attr_accessor :step_templates
 
     def initialize
       register_step_templates
       register_step_handler_classes
     end
 
-    def initialize_task(requested_task)
-      Task.create_with_defaults!(
+    def initialize_task!(requested_task)
+      task = Task.create_with_defaults!(
         requested_task[:task_name],
         requested_task[:context],
         requested_task[:status],
@@ -21,9 +22,18 @@ module TaskHandlers
         requested_task[:tags],
         requested_task[:bypass_steps]
       )
+      sequence = get_sequence(task)
+      task.workflow_steps = sequence.steps
+      task.save!
+      enqueue_task(task)
+      task
     end
 
-    def get_sequence(task); end
+    def get_sequence(task)
+      steps = WorkflowStep.get_steps_for_task(task, step_templates)
+      establish_step_dependencies_and_defaults(task, steps)
+      StepSequence.new(steps: steps)
+    end
 
     def start_task(task)
       raise Errors::ProceduralError, "task already complete for #{task.task_id}" if task.complete
