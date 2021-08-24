@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module TaskHandlers
-  class HandlerBase
+  module HandlerCommon
     attr_accessor :step_handler_class_map, :step_templates
 
     def initialize
@@ -54,6 +54,8 @@ module TaskHandlers
       if more_viable_steps.length.positive?
         # I don't need to re-run the validations here
         task.update_attribute(:status, Constants::TaskStatuses::IN_PROGRESS)
+        # if there are more viable steps that we can handle now
+        # that we are not waiting on, then just recursively call handle again
         handle(task)
       end
       finalize(task, sequence, steps)
@@ -136,13 +138,13 @@ module TaskHandlers
       TaskRunnerJob.perform_later task.task_id
     end
 
-    # override in sublcass
+    # override in implementing class
     def establish_step_dependencies_and_defaults(task, steps); end
 
-    # override in subclass
+    # override in implementing class
     def update_annotations(action, sequence, steps); end
 
-    # override in subclass
+    # override in implementing class
     def register_step_templates; end
   end
 end

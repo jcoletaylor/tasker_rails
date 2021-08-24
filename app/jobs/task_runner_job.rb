@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-class TaskRunnerJob < ApplicationJob
-  queue_as :default
-  sidekiq_options retry: 3
+class TaskRunnerJob
+  include Sidekiq::Worker
+  sidekiq_options retry: 3, backtrace: true, queue: :default
 
   def perform(task_id)
     task = Task.where(task_id: task_id).first
