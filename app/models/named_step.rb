@@ -24,4 +24,14 @@ class NamedStep < ApplicationRecord
   belongs_to :dependent_system
   has_many :workflow_steps, dependent: :destroy
   validates :name, presence: true, uniqueness: { scope: :dependent_system_id }
+
+  def self.create_named_steps_from_templates(templates)
+    named_steps =
+      templates.map do |template|
+        dependent_system = DependentSystem.find_or_create_by!(name: template.dependent_system)
+        named_step = NamedStep.find_or_create_by!(name: template.name, dependent_system_id: dependent_system.dependent_system_id)
+        named_step
+      end
+    named_steps
+  end
 end
