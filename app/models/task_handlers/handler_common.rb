@@ -56,7 +56,7 @@ module TaskHandlers
       more_viable_steps = WorkflowStep.get_viable_steps(task, sequence)
       if more_viable_steps.length.positive?
         # I don't need to re-run the validations here
-        task.update_attribute(:status, Constants::TaskStatuses::IN_PROGRESS)
+        task.update_attributes(:status, Constants::TaskStatuses::IN_PROGRESS)
         # if there are more viable steps that we can handle now
         # that we are not waiting on, then just recursively call handle again
         handle(task)
@@ -114,10 +114,11 @@ module TaskHandlers
             return true if err_step.attempts >= err_step.retry_limit
           end
         if too_many_attempts_steps.length.positive?
-          update_task_with_status(task, Constants::TaskStatuses::ERROR)
+          task.update_attribute(:status, Constants::TaskStatuses::ERROR)
           return
         end
-        update_task_with_status(task, Constants::TaskStatuses::PENDING)
+        task.update_attribute(:status, Constants::TaskStatuses::PENDING)
+        enqueue_task(task)
         return
       end
       # determine which states were incomplete for the whole sequence before this round
@@ -127,7 +128,7 @@ module TaskHandlers
         end
       # if nothing was incomplete, set the task to complete and save, and return
       if prior_incomplete_steps.length.zero?
-        update_task_with_status(task, Constants::TaskStatuses::COMPLETE)
+        task.update_attribute(:status, Constants::TaskStatuses::COMPLETE)
         return
       end
       # the steps that are passed into finalize are not the whole sequence
@@ -146,7 +147,7 @@ module TaskHandlers
       # if nothing is still incomplete after this pass
       # mark the task complete, update it, and return
       if still_incomplete_steps.length.zero?
-        update_task_with_status(task, Constants::TaskStatuses::COMPLETE)
+        task.update_attribute(:status, Constants::TaskStatuses::COMPLETE)
         return
       end
       # what is still working but in a valid, retryable state
@@ -158,21 +159,14 @@ module TaskHandlers
       # set the status of the task back to pending, update it,
       # and re-enqueue the task for processing
       if still_working_steps.length.positive?
-        update_task_with_status(task, Constants::TaskStatuses::PENDING)
+        task.update_attribute(:status, Constants::TaskStatuses::PENDING)
+        enqueue_task(task)
         return
       end
       # if we reach the end and have not re-enqueued the task
       # then we mark it complete since none of the above proved true
-      update_task_with_status(task, Constants::TaskStatuses::COMPLETE)
+      task.update_attribute(:status, Constants::TaskStatuses::COMPLETE)
       return
-    end
-
-    def update_task_with_status(task, status)
-      # it's okay to skip validation here, nothing has changed
-      # about the task in these iterations, only the status
-      # we can be efficient about not re-running validators
-      task.update_attribute(:status, status)
-      enqueue_task(task) if status == Constants::TaskStatuses::PENDING
     end
 
     def register_step_handler_classes
