@@ -81,6 +81,8 @@ module TaskHandlers
       steps.each do |step|
         handle_one_step(task, sequence, step)
       end
+      # we can update annotations in every pass
+      update_annotations(task, sequence, steps)
       steps
     end
 
@@ -92,7 +94,6 @@ module TaskHandlers
     # we could break it down into components, but I think it may be
     # harder to reason about
     def finalize(task, sequence, steps)
-      update_annotations(task, sequence, steps)
       # how many steps in this round are in an error state before, and based on
       # being processed in this round of handling, is it still in an error state
       error_steps = get_error_steps(steps, sequence)
