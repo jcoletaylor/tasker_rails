@@ -45,8 +45,8 @@ class Task < ApplicationRecord
   validates :identity_hash, presence: true
   validates :requested_at, presence: true
   validates :status, presence: true, inclusion: { in: Constants::VALID_TASK_STATUSES }
-  validate :unique_identity_hash
-  before_validation :set_identity_hash
+  validate :unique_identity_hash, on: :create
+  before_validation :set_identity_hash, on: :create
 
   delegate :name, to: :named_task
 
