@@ -56,7 +56,7 @@ module TaskHandlers
       more_viable_steps = WorkflowStep.get_viable_steps(task, sequence)
       if more_viable_steps.length.positive?
         # I don't need to re-run the validations here
-        task.update_attributes(:status, Constants::TaskStatuses::IN_PROGRESS)
+        task.update_attribute(:status, Constants::TaskStatuses::IN_PROGRESS)
         # if there are more viable steps that we can handle now
         # that we are not waiting on, then just recursively call handle again
         handle(task)
