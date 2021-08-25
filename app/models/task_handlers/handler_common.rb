@@ -13,17 +13,10 @@ module TaskHandlers
     end
 
     def initialize_task!(requested_task)
-      task = Task.create_with_defaults!(
-        requested_task[:task_name],
-        requested_task[:context],
-        requested_task[:status],
-        requested_task[:initiator],
-        requested_task[:source_system],
-        requested_task[:reason],
-        false,
-        requested_task[:tags],
-        requested_task[:bypass_steps]
-      )
+      rq = requested_task.dup
+      task_name = rq.delete(:task_name)
+      context = rq.delete(:context)
+      task = Task.create_with_defaults!(task_name, context, rq)
       sequence = get_sequence(task)
       task.workflow_steps = sequence.steps
       task.save!

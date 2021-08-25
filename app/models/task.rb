@@ -53,30 +53,19 @@ class Task < ApplicationRecord
   def self.create_with_defaults!(
     task_name,
     context,
-    status = Constants::TaskStatuses::PENDING,
-    initiator = Constants::UNKNOWN,
-    source_system = Constants::UNKNOWN,
-    reason = Constants::UNKNOWN,
-    complete = false,
-    tags = [],
-    bypass_steps = [],
-    requested_at = Time.zone.now
+    options = {
+      status: Constants::TaskStatuses::PENDING,
+      initiator: Constants::UNKNOWN,
+      source_system: Constants::UNKNOWN,
+      reason: Constants::UNKNOWN,
+      complete: false,
+      tags: [],
+      bypass_steps: [],
+      requested_at: Time.zone.now
+    }
   )
     named_task = NamedTask.find_or_create_by!(name: task_name)
-    inst = create!(
-      named_task: named_task,
-      named_task_id: named_task.named_task_id,
-      status: status,
-      initiator: initiator,
-      source_system: source_system,
-      context: context,
-      reason: reason,
-      bypass_steps: bypass_steps,
-      requested_at: requested_at,
-      complete: complete,
-      tags: tags
-    )
-    inst
+    create!(options.merge({ named_task: named_task, named_task_id: named_task.named_task_id, context: context }))
   end
 
   private
