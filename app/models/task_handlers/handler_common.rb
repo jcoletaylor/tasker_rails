@@ -5,6 +5,9 @@ module TaskHandlers
     attr_accessor :step_handler_class_map, :step_templates
 
     def initialize
+      # NOTE: this relies on super being called
+      # or classes where this is included calling
+      # the register methods themselves
       register_step_templates
       register_step_handler_classes
     end
@@ -88,11 +91,91 @@ module TaskHandlers
       steps
     end
 
+    # this is a long method, there's no real way around it
+    # we are finalizing whether a task is complete
+    # whether it is in error, or whether we can still retry it
+    # or whether no errors exist but if we should re-enqueue
+    # if there are still valid workable steps
+    # we could break it down into components, but I think it may be
+    # harder to reason about
     def finalize(task, sequence, steps)
-      # TODO: write the finalization and annotation update logic
+      update_annotations(task, sequence, steps)
+      # how many steps in this round are in an error state before, and based on
+      # being processed in this round of handling, is it still in an error state
+      error_steps = get_error_steps(steps, sequence)
+      # if there are no steps in error still, then move on to the rest of the checks
+      # if there are steps in error still, then we need to see if we have tried them
+      # too many times - if we have, we need to mark the whole task as in error
+      # if we have not, then we need to re-enqueue the task
+      if error_steps.positive?
+        too_many_attempts_steps =
+          error_steps.filter do |err_step|
+            return true if err_step.attempts.positive? && !err_step.retryable
+            return true if err_step.attempts >= err_step.retry_limit
+          end
+        if too_many_attempts_steps.length.positive?
+          update_task_with_status(task, Constants::TaskStatuses::ERROR)
+          return
+        end
+        update_task_with_status(task, Constants::TaskStatuses::PENDING)
+        return
+      end
+      # determine which states were incomplete for the whole sequence before this round
+      prior_incomplete_steps =
+        sequence.steps.filter do |step|
+          !Constants::VALID_STEP_COMPLETION_STATES.include?(step.status)
+        end
+      # if nothing was incomplete, set the task to complete and save, and return
+      if prior_incomplete_steps.length.zero?
+        update_task_with_status(task, Constants::TaskStatuses::COMPLETE)
+        return
+      end
+      # the steps that are passed into finalize are not the whole sequence
+      # just what has been worked on in this pass, so we need to see what completed
+      # in a valid state, and what has still to be done
+      this_pass_complete_steps =
+        steps.filter do |step|
+          !Constants::VALID_STEP_COMPLETION_STATES.include?(step.status)
+        end
+      this_pass_complete_step_ids = this_pass_complete_steps.map(&:workflow_step_id)
+      # what was incomplete from the prior pass that is still incopmlete now
+      still_incomplete_steps =
+        prior_incomplete_steps.filter do |step|
+          !this_pass_complete_step_ids.include?(step.workflow_step_id)
+        end
+      # if nothing is still incomplete after this pass
+      # mark the task complete, update it, and return
+      if still_incomplete_steps.length.zero?
+        update_task_with_status(task, Constants::TaskStatuses::COMPLETE)
+        return
+      end
+      # what is still working but in a valid, retryable state
+      still_working_steps =
+        still_incomplete_steps.filter do |step|
+          Constants::VALID_STEP_STILL_WORKING_STATES.include?(step.status)
+        end
+      # if we have steps that still need to be completed and in valid states
+      # set the status of the task back to pending, update it,
+      # and re-enqueue the task for processing
+      if still_working_steps.length.positive?
+        update_task_with_status(task, Constants::TaskStatuses::PENDING)
+        return
+      end
+      # if we reach the end and have not re-enqueued the task
+      # then we mark it complete since none of the above proved true
+      update_task_with_status(task, Constants::TaskStatuses::COMPLETE)
+      return
     end
 
-    def register_step_handler_function_classes
+    def update_task_with_status(task, status)
+      # it's okay to skip validation here, nothing has changed
+      # about the task in these iterations, only the status
+      # we can be efficient about not re-running validators
+      task.update_attribute(:status, status)
+      enqueue_task(task) if status == Constants::TaskStatuses::PENDING
+    end
+
+    def register_step_handler_classes
       self.step_handler_class_map = {}
       step_templates.each do |template|
         step_handler_class_map[template.name] = template.handler_class
@@ -119,16 +202,19 @@ module TaskHandlers
     def get_error_steps(steps, sequence)
       error_steps =
         sequence.steps.filter do |step|
+          # if in the original sequence this was an error
+          # we need to see if the updated steps are still in error
           if step.status == Constants::WorkflowStepStatuses::ERROR
             processed_step =
               steps.find do |s|
                 s.workflow_step_id == step.workflow_step_id
               end
+            # no updated step was found to change our mind
+            # about whether it was in error before, so true, still in error
             return true unless processed_step
 
-            return true if processed_step.status == Constants::WorkflowStepStatuses::ERROR
-
-            return false
+            # was the processed step in error still
+            return processed_step.status == Constants::WorkflowStepStatuses::ERROR
           end
         end
       error_steps
@@ -142,9 +228,11 @@ module TaskHandlers
     def establish_step_dependencies_and_defaults(task, steps); end
 
     # override in implementing class
-    def update_annotations(action, sequence, steps); end
+    def update_annotations(task, sequence, steps); end
 
     # override in implementing class
-    def register_step_templates; end
+    def register_step_templates
+      self.step_templates = []
+    end
   end
 end

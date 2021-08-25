@@ -55,8 +55,6 @@ class NamedTasksNamedStep < ApplicationRecord
   end
 
   def self.associate_named_step_with_named_task(task, template, named_step)
-    # TODO: find all the defaults for systems and named actions
-    # and return a step_for_task here
     named_task = NamedTask.find_or_create_by!(name: task.name)
     ntns = named_steps_for_named_task(named_task.named_task_id).where(named_steps: { name: named_step.name }).first
     return ntns if ntns

@@ -86,9 +86,44 @@ class WorkflowStep < ApplicationRecord
     )
   end
 
-  def self.get_viable_steps(task, _sequence)
-    steps = where(task_id: task.task_id).all
-    # TODO: build the validation logic
-    steps
+  def self.get_viable_steps(task, sequence)
+    unfinished_steps = sequence.steps.filter { |step| !step.processed && !step.in_process }
+    unfinished_step_ids = unfinished_steps.map(&:workflow_step_id)
+    viable_steps =
+      unfinished_steps.filter do |step|
+        return false if step.in_process
+        return false if step.status == Constants::WorkflowStepStatuses::CANCELLED
+        return false if step.attempts.positive? && !step.retryable
+        return false if step.attempts >= step.retry_limit
+        return false if step.depends_on_step_id && unfinished_step_ids.include?(step.depends_on_step_id)
+
+        if step.backoff_request_seconds && step.last_attempted_at
+          backoff_end = step.last_attempted_at + step.backoff_request_seconds
+          return false if Time.zone.now < backoff_end
+        end
+        return false if task&.bypass_steps&.include?(step.name)
+
+        return true
+      end
+    viable_steps
+  end
+
+  def self.get_dependent_step_from_sequence(
+    step,
+    sequence,
+    require_results = true,
+    require_inputs = false
+  )
+    dependent_step = sequence.steps.find { |sibling_step| step.depends_on_step_id == sibling_step.workflow_step_id }
+
+    raise Errors::ProceduralError, "required dependent step for #{step.workflow_step_id} not found" unless dependent_step
+
+    raise Errors::ProceduralError, "required dependent step #{dependent_step.workflow_step_id} incomplete" unless dependent_step.processed
+
+    raise Errors::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable results" if require_results && !dependendent_step.results
+
+    raise Errors::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable results" if require_inputs && !dependendent_step.inputs
+
+    dependent_step
   end
 end
