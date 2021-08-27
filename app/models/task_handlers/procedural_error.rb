@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Errors
+module TaskHandlers
   class ProceduralError < StandardError
   end
 end

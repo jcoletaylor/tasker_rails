@@ -16,10 +16,11 @@ module TaskHandlers
       rq = requested_task.dup
       task_name = rq.delete(:task_name)
       context = rq.delete(:context)
-      task = Task.create_with_defaults!(task_name, context, rq)
-      sequence = get_sequence(task)
-      task.workflow_steps = sequence.steps
-      task.save!
+      task = nil
+      Task.transaction do
+        task = Task.create_with_defaults!(task_name, context, rq)
+        get_sequence(task)
+      end
       enqueue_task(task)
       task
     end
@@ -31,9 +32,9 @@ module TaskHandlers
     end
 
     def start_task(task)
-      raise Errors::ProceduralError, "task already complete for #{task.task_id}" if task.complete
+      raise TaskHandlers::ProceduralError, "task already complete for task #{task.task_id}" if task.complete
 
-      raise Errors::ProceduralError, "task is not pending for #{task.task_id}, status is #{task.status}" unless task.status == Constants::TaskStatuses::PENDING
+      raise TaskHandlers::ProceduralError, "task is not pending for task #{task.task_id}, status is #{task.status}" unless task.status == Constants::TaskStatuses::PENDING
 
       # I don't need to re-run the validations here
       task.update_attribute(:status, Constants::TaskStatuses::IN_PROGRESS)
@@ -49,7 +50,7 @@ module TaskHandlers
       more_viable_steps = WorkflowStep.get_viable_steps(task, sequence)
       if more_viable_steps.length.positive?
         # I don't need to re-run the validations here
-        task.update_attribute(:status, Constants::TaskStatuses::IN_PROGRESS)
+        task.update_attribute(:status, Constants::TaskStatuses::PENDING)
         # if there are more viable steps that we can handle now
         # that we are not waiting on, then just recursively call handle again
         handle(task)
@@ -101,7 +102,7 @@ module TaskHandlers
       # if there are steps in error still, then we need to see if we have tried them
       # too many times - if we have, we need to mark the whole task as in error
       # if we have not, then we need to re-enqueue the task
-      if error_steps.positive?
+      if error_steps.length.positive?
         too_many_attempts_steps =
           error_steps.filter do |err_step|
             return true if err_step.attempts.positive? && !err_step.retryable
@@ -171,7 +172,7 @@ module TaskHandlers
     end
 
     def get_step_handler(step)
-      raise Errors::ProceduralError, "No registered class for #{step.name}" unless step_handler_class_map[step.name]
+      raise TaskHandlers::ProceduralError, "No registered class for #{step.name}" unless step_handler_class_map[step.name]
 
       step_handler_class_map[step.name].to_s.camelize.constantize.new
     end
@@ -209,7 +210,7 @@ module TaskHandlers
     end
 
     def enqueue_task(task)
-      TaskRunnerJob.perform_later task.task_id
+      TaskRunnerJob.perform_async(task.task_id)
     end
 
     # override in implementing class

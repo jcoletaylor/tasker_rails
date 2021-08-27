@@ -39,10 +39,12 @@ class WorkflowStep < ApplicationRecord
   self.primary_key = :workflow_step_id
   belongs_to :task
   belongs_to :named_step
-  belongs_to :depends_on_step, class_name: 'WorkflowStep'
+  belongs_to :depends_on_step, class_name: 'WorkflowStep', optional: true
 
   validates :task_id, presence: true
   validates :named_step_id, presence: true
+
+  delegate :name, to: :named_step
 
   def self.get_steps_for_task(task, templates)
     named_steps = NamedStep.create_named_steps_from_templates(templates)
@@ -89,22 +91,22 @@ class WorkflowStep < ApplicationRecord
   def self.get_viable_steps(task, sequence)
     unfinished_steps = sequence.steps.filter { |step| !step.processed && !step.in_process }
     unfinished_step_ids = unfinished_steps.map(&:workflow_step_id)
-    viable_steps =
-      unfinished_steps.filter do |step|
-        return false if step.in_process
-        return false if step.status == Constants::WorkflowStepStatuses::CANCELLED
-        return false if step.attempts.positive? && !step.retryable
-        return false if step.attempts >= step.retry_limit
-        return false if step.depends_on_step_id && unfinished_step_ids.include?(step.depends_on_step_id)
+    viable_steps = []
+    unfinished_steps.each do |step|
+      next if step.in_process
+      next if step.status == Constants::WorkflowStepStatuses::CANCELLED
+      next if step.attempts.positive? && !step.retryable
+      next if step.attempts >= step.retry_limit
+      next if step.depends_on_step_id && unfinished_step_ids.include?(step.depends_on_step_id)
 
-        if step.backoff_request_seconds && step.last_attempted_at
-          backoff_end = step.last_attempted_at + step.backoff_request_seconds
-          return false if Time.zone.now < backoff_end
-        end
-        return false if task&.bypass_steps&.include?(step.name)
-
-        return true
+      if step.backoff_request_seconds && step.last_attempted_at
+        backoff_end = step.last_attempted_at + step.backoff_request_seconds
+        next if Time.zone.now < backoff_end
       end
+      next if task&.bypass_steps&.include?(step.name)
+
+      viable_steps << step
+    end
     viable_steps
   end
 
@@ -116,13 +118,13 @@ class WorkflowStep < ApplicationRecord
   )
     dependent_step = sequence.steps.find { |sibling_step| step.depends_on_step_id == sibling_step.workflow_step_id }
 
-    raise Errors::ProceduralError, "required dependent step for #{step.workflow_step_id} not found" unless dependent_step
+    raise TaskHandlers::ProceduralError, "required dependent step for #{step.workflow_step_id} not found" unless dependent_step
 
-    raise Errors::ProceduralError, "required dependent step #{dependent_step.workflow_step_id} incomplete" unless dependent_step.processed
+    raise TaskHandlers::ProceduralError, "required dependent step #{dependent_step.workflow_step_id} incomplete" unless dependent_step.processed
 
-    raise Errors::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable results" if require_results && !dependendent_step.results
+    raise TaskHandlers::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable results" if require_results && !dependendent_step.results
 
-    raise Errors::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable results" if require_inputs && !dependendent_step.inputs
+    raise TaskHandlers::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable results" if require_inputs && !dependendent_step.inputs
 
     dependent_step
   end

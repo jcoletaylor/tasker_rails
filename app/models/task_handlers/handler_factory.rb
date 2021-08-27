@@ -10,7 +10,7 @@ module TaskHandlers
     end
 
     def get(name)
-      raise Errors::ProceduralError, "No task handler for #{name}" unless handler_classes[name.to_sym]
+      raise TaskHandlers::ProceduralError, "No task handler for #{name}" unless handler_classes[name.to_sym]
 
       handler_classes[name.to_sym].to_s.camelize.constantize.new
     end
