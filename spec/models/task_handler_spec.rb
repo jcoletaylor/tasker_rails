@@ -32,6 +32,15 @@ RSpec.describe 'TaskHandlers', type: :model do
       step_states = task.workflow_steps.map(&:status)
       expect(step_states).to eq(%w[complete complete complete complete])
       expect(task.task_annotations.count).to eq(4)
+      # check on steps to ensure that the dependencies mapped correctly
+
+      step_two = task.workflow_steps.includes(:named_step).where(named_step: { name: DummyTask::STEP_TWO }).first
+      step_three = task.workflow_steps.includes(:named_step).where(named_step: { name: DummyTask::STEP_THREE }).first
+      step_four = task.workflow_steps.includes(:named_step).where(named_step: { name: DummyTask::STEP_FOUR }).first
+
+      expect(step_two.depends_on_step_id).to be_nil
+      expect(step_three.depends_on_step_id).to eq(step_two.workflow_step_id)
+      expect(step_four.depends_on_step_id).to eq(step_three.workflow_step_id)
     end
   end
 end
