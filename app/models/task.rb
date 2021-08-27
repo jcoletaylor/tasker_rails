@@ -40,6 +40,7 @@ class Task < ApplicationRecord
   after_initialize :init_defaults, if: :new_record?
   belongs_to :named_task
   has_many :workflow_steps, dependent: :destroy
+  has_many :task_annotations, dependent: :destroy
 
   validates :named_task_id, presence: true
   validates :context, presence: true

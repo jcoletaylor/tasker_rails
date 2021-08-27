@@ -31,6 +31,7 @@ RSpec.describe 'TaskHandlers', type: :model do
       task.reload
       step_states = task.workflow_steps.map(&:status)
       expect(step_states).to eq(%w[complete complete complete complete])
+      expect(task.task_annotations.count).to eq(4)
     end
   end
 end
