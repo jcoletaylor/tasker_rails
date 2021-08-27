@@ -14,6 +14,7 @@
 #  results                 :jsonb
 #  retry_limit             :integer          default(3)
 #  retryable               :boolean          default(TRUE), not null
+#  skippable               :boolean          default(FALSE), not null
 #  status                  :string(64)       not null
 #  depends_on_step_id      :bigint
 #  named_step_id           :integer          not null
@@ -51,9 +52,9 @@ class WorkflowStep < ApplicationRecord
     steps =
       templates.map do |template|
         named_step = named_steps.find { |ns| template.name == ns.name }
-        named_task_named_step = NamedTasksNamedStep.associate_named_step_with_named_task(task, template, named_step)
+        NamedTasksNamedStep.associate_named_step_with_named_task(task, template, named_step)
         step = where(task_id: task.task_id, named_step_id: named_step.named_step_id).first
-        step ||= build_default_step!(task, named_task_named_step)
+        step ||= build_default_step!(task, template, named_step)
         step
       end
     steps = set_up_dependent_steps(steps, templates)
@@ -72,14 +73,15 @@ class WorkflowStep < ApplicationRecord
     steps
   end
 
-  def self.build_default_step!(task, named_task_named_step)
+  def self.build_default_step!(task, template, named_step)
     create!(
       {
         task_id: task.task_id,
-        named_step_id: named_task_named_step.named_step_id,
+        named_step_id: named_step.named_step_id,
         status: Constants::WorkflowStepStatuses::PENDING,
-        retryable: named_task_named_step.default_retryable,
-        retry_limit: named_task_named_step.default_retry_limit,
+        retryable: template.default_retryable,
+        retry_limit: template.default_retry_limit,
+        skippable: template.skippable,
         in_process: false,
         inputs: task.context,
         processed: false,
@@ -103,7 +105,7 @@ class WorkflowStep < ApplicationRecord
         backoff_end = step.last_attempted_at + step.backoff_request_seconds
         next if Time.zone.now < backoff_end
       end
-      next if task&.bypass_steps&.include?(step.name)
+      next if task&.bypass_steps&.include?(step.name) && step.skippable
 
       viable_steps << step
     end
@@ -124,7 +126,7 @@ class WorkflowStep < ApplicationRecord
 
     raise TaskHandlers::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable results" if require_results && !dependendent_step.results
 
-    raise TaskHandlers::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable results" if require_inputs && !dependendent_step.inputs
+    raise TaskHandlers::ProceduralError, "dependent step #{dependent_step.workflow_step_id} does not have viable inputs" if require_inputs && !dependendent_step.inputs
 
     dependent_step
   end

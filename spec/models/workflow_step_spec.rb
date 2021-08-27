@@ -14,6 +14,7 @@
 #  results                 :jsonb
 #  retry_limit             :integer          default(3)
 #  retryable               :boolean          default(TRUE), not null
+#  skippable               :boolean          default(FALSE), not null
 #  status                  :string(64)       not null
 #  depends_on_step_id      :bigint
 #  named_step_id           :integer          not null
