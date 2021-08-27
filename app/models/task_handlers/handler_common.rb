@@ -14,7 +14,7 @@ module TaskHandlers
 
     def initialize_task!(requested_task)
       rq = requested_task.dup
-      task_name = rq.delete(:task_name)
+      task_name = rq.delete(:name)
       context = rq.delete(:context)
       task = nil
       Task.transaction do

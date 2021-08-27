@@ -44,11 +44,9 @@ class Task < ApplicationRecord
 
   validates :named_task_id, presence: true
   validates :context, presence: true
-  validates :identity_hash, presence: true
   validates :requested_at, presence: true
   validates :status, presence: true, inclusion: { in: Constants::VALID_TASK_STATUSES }
   validate :unique_identity_hash, on: :create
-  before_validation :set_identity_hash, on: :create
 
   delegate :name, to: :named_task
 
@@ -67,12 +65,17 @@ class Task < ApplicationRecord
     }
   )
     named_task = NamedTask.find_or_create_by!(name: task_name)
-    create!(options.merge({ named_task: named_task, named_task_id: named_task.named_task_id, context: context }))
+    task = Task.new(options.merge({ named_task_id: named_task.named_task_id, context: context }))
+    task.named_task = named_task
+    task.save!
+    task
   end
 
   private
 
   def unique_identity_hash
+    return errors.add(:named_task_id, 'no task name found') unless named_task
+
     set_identity_hash
     inst = self.class.where(identity_hash: identity_hash).where.not(task_id: task_id).first
     errors.add(:identity_hash, 'is identical to a request made in the last minute') if inst
