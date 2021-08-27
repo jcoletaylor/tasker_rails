@@ -50,9 +50,8 @@ class TasksController < ApplicationController
 
   # DELETE /tasks/1
   def destroy
-    @task.status = Constants::TaskStatuses::CANCELLED
-    @task.save
-    render status: :ok, json: { deleted: true }
+    @task.update({ status: Constants::TaskStatuses::CANCELLED })
+    render status: :ok, json: { cancelled: true }
   end
 
   private
