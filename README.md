@@ -1,9 +1,6 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
+A more thorough README will be coming soon, but for now, take a look at the [About](./ABOUT.md) page.
 
 * Ruby version
 
@@ -20,5 +17,3 @@ Things you may want to cover:
 * Services (job queues, cache servers, search engines, etc.)
 
 * Deployment instructions
-
-* ...
