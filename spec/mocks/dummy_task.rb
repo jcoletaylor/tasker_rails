@@ -42,7 +42,7 @@ class DummyTask
         default_retryable: true,
         default_retry_limit: 3,
         skippable: false,
-        handler_class: 'DummyTask::Handler'
+        handler_class: DummyTask::Handler
       ),
       StepTemplate.new(
         dependent_system: DUMMY_SYSTEM,
@@ -51,7 +51,7 @@ class DummyTask
         default_retryable: true,
         default_retry_limit: 3,
         skippable: false,
-        handler_class: 'DummyTask::Handler'
+        handler_class: DummyTask::Handler
       ),
       StepTemplate.new(
         dependent_system: DUMMY_SYSTEM,
@@ -61,7 +61,7 @@ class DummyTask
         default_retryable: true,
         default_retry_limit: 3,
         skippable: false,
-        handler_class: 'DummyTask::Handler'
+        handler_class: DummyTask::Handler
       ),
       StepTemplate.new(
         dependent_system: DUMMY_SYSTEM,
@@ -71,7 +71,7 @@ class DummyTask
         default_retryable: true,
         default_retry_limit: 3,
         skippable: false,
-        handler_class: 'DummyTask::Handler'
+        handler_class: DummyTask::Handler
       )
     ]
   end

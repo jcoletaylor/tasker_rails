@@ -10,11 +10,11 @@ RSpec.describe 'TaskHandlers', type: :model do
     end
     it 'should be able to initialize a dummy task and get the handler' do
       task_handler = DummyTask.new
-      expect(task_handler.step_templates.first.handler_class).to eq('DummyTask::Handler')
+      expect(task_handler.step_templates.first.handler_class).to eq(DummyTask::Handler)
     end
     it 'handler factory should be able to find the correct handler' do
       task_handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
-      expect(task_handler.step_templates.first.handler_class).to eq('DummyTask::Handler')
+      expect(task_handler.step_templates.first.handler_class).to eq(DummyTask::Handler)
     end
     it 'should be able to initialize a task' do
       task_handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)

@@ -167,7 +167,7 @@ module TaskHandlers
     def register_step_handler_classes
       self.step_handler_class_map = {}
       step_templates.each do |template|
-        step_handler_class_map[template.name] = template.handler_class
+        step_handler_class_map[template.name] = template.handler_class.to_s
       end
     end
 
