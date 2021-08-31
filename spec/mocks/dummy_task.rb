@@ -77,4 +77,4 @@ class DummyTask
   end
 end
 
-TaskHandlers::HandlerFactory.instance.register(DummyTask::TASK_REGISTRY_NAME, 'DummyTask')
+TaskHandlers::HandlerFactory.instance.register(DummyTask::TASK_REGISTRY_NAME, DummyTask)

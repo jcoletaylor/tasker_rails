@@ -16,7 +16,7 @@ module TaskHandlers
     end
 
     def register(name, class_name)
-      self.handler_classes[name.to_sym] = class_name
+      self.handler_classes[name.to_sym] = class_name.to_s
     end
   end
 end
