@@ -101,11 +101,11 @@ module TaskHandlers
       # too many times - if we have, we need to mark the whole task as in error
       # if we have not, then we need to re-enqueue the task
       if error_steps.length.positive?
-        too_many_attempts_steps =
-          error_steps.filter do |err_step|
-            return true if err_step.attempts.positive? && !err_step.retryable
-            return true if err_step.attempts >= err_step.retry_limit
-          end
+        too_many_attempts_steps = []
+        error_steps.each do |err_step|
+          too_many_attempts_steps << err_step if err_step.attempts.positive? && !err_step.retryable
+          too_many_attempts_steps << err_step if err_step.attempts >= err_step.retry_limit
+        end
         if too_many_attempts_steps.length.positive?
           task.update({ status: Constants::TaskStatuses::ERROR })
           return
@@ -187,23 +187,26 @@ module TaskHandlers
     end
 
     def get_error_steps(steps, sequence)
-      error_steps =
-        sequence.steps.filter do |step|
-          # if in the original sequence this was an error
-          # we need to see if the updated steps are still in error
-          if step.status == Constants::WorkflowStepStatuses::ERROR
-            processed_step =
-              steps.find do |s|
-                s.workflow_step_id == step.workflow_step_id
-              end
-            # no updated step was found to change our mind
-            # about whether it was in error before, so true, still in error
-            return true unless processed_step
+      error_steps = []
+      sequence.steps.each do |step|
+        # if in the original sequence this was an error
+        # we need to see if the updated steps are still in error
+        next unless step.status == Constants::WorkflowStepStatuses::ERROR
 
-            # was the processed step in error still
-            return processed_step.status == Constants::WorkflowStepStatuses::ERROR
+        processed_step =
+          steps.find do |s|
+            s.workflow_step_id == step.workflow_step_id
           end
+        # no updated step was found to change our mind
+        # about whether it was in error before, so true, still in error
+        if processed_step.nil?
+          error_steps << step
+          next
         end
+
+        # was the processed step in error still
+        error_steps << step if processed_step.status == Constants::WorkflowStepStatuses::ERROR
+      end
       error_steps
     end
 

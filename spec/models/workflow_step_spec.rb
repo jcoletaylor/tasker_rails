@@ -171,5 +171,65 @@ RSpec.describe WorkflowStep, type: :model do
       viable_steps = WorkflowStep.get_viable_steps(task, sequence)
       expect(viable_steps).to eq([])
     end
+    it 'should not count steps in backoff as viable' do
+      task = @task_handler.initialize_task!(@helper.task_request({ reason: 'no backoff', name: WFSpecHelpers::DUMMY_TASK_TWO }))
+      expect(task.save).to be_truthy
+      sequence = @task_handler.get_sequence(task)
+      # reset steps to default so we can manipulate them for validation
+      sequence.steps.each do |step|
+        @helper.reset_step_to_default(step)
+        expect(step.save).to be_truthy
+      end
+      step_one = sequence.steps.find { |step| step.name == DummyTask::STEP_ONE }
+      step_two = sequence.steps.find { |step| step.name == DummyTask::STEP_TWO }
+      step_one.update({ backoff_request_seconds: 30, last_attempted_at: Time.zone.now })
+      sequence = @task_handler.get_sequence(task)
+      viable_steps = WorkflowStep.get_viable_steps(task, sequence)
+      expect(viable_steps).to eq([step_two])
+    end
+    it 'should set task to pending if steps valid but not accomplishable yet' do
+      task = @task_handler.initialize_task!(@helper.task_request({ reason: 'task set to pending', name: WFSpecHelpers::DUMMY_TASK_TWO }))
+      expect(task.save).to be_truthy
+      sequence = @task_handler.get_sequence(task)
+      # reset steps to default so we can manipulate them for validation
+      sequence.steps.each do |step|
+        @helper.reset_step_to_default(step)
+        expect(step.save).to be_truthy
+      end
+      step_one = sequence.steps.find { |step| step.name == DummyTask::STEP_ONE }
+      step_two = sequence.steps.find { |step| step.name == DummyTask::STEP_TWO }
+      step_three = sequence.steps.find { |step| step.name == DummyTask::STEP_THREE }
+      step_four = sequence.steps.find { |step| step.name == DummyTask::STEP_FOUR }
+      step_three.update({ status: Constants::WorkflowStepStatuses::IN_PROGRESS })
+      sequence = @task_handler.get_sequence(task)
+      viable_steps = WorkflowStep.get_viable_steps(task, sequence)
+      expect(viable_steps).to eq([step_one, step_two])
+      @task_handler.handle(task)
+      task.reload
+      expect(task.status).to eq(Constants::TaskStatuses::PENDING)
+      sequence = @task_handler.get_sequence(task)
+      viable_steps = WorkflowStep.get_viable_steps(task, sequence)
+      expect(viable_steps).to eq([])
+      expect([step_three.status, step_four.status]).to eq(%w[in_progress pending])
+    end
+    it 'should be able to set the action in error if a step is in error' do
+      task = @task_handler.initialize_task!(@helper.task_request({ reason: 'task set to error', name: WFSpecHelpers::DUMMY_TASK_TWO }))
+      expect(task.save).to be_truthy
+      sequence = @task_handler.get_sequence(task)
+      # reset steps to default so we can manipulate them for validation
+      sequence.steps.each do |step|
+        @helper.reset_step_to_default(step)
+        expect(step.save).to be_truthy
+      end
+      step_one = sequence.steps.find { |step| step.name == DummyTask::STEP_ONE }
+      step_two = sequence.steps.find { |step| step.name == DummyTask::STEP_TWO }
+      step_one.update({ status: Constants::WorkflowStepStatuses::ERROR, attempts: step_one.retry_limit + 1 })
+      sequence = @task_handler.get_sequence(task)
+      viable_steps = WorkflowStep.get_viable_steps(task, sequence)
+      expect(viable_steps).to eq([step_two])
+      @task_handler.handle(task)
+      task.reload
+      expect(task.status).to eq(Constants::TaskStatuses::ERROR)
+    end
   end
 end
