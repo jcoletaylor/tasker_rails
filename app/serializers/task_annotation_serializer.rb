@@ -22,5 +22,5 @@
 #  task_annotations_task_id_foreign             (task_id => tasks.task_id)
 #
 class TaskAnnotationSerializer < ActiveModel::Serializer
-  attributes :task_id, :task_annotation_id, :annotation, :name
+  attributes :task_id, :task_annotation_id, :annotation, :annotation_type_name
 end

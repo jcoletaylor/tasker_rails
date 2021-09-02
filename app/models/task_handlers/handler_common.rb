@@ -51,7 +51,7 @@ module TaskHandlers
         task.update({ status: Constants::TaskStatuses::PENDING })
         # if there are more viable steps that we can handle now
         # that we are not waiting on, then just recursively call handle again
-        handle(task)
+        return handle(task)
       end
       finalize(task, sequence, steps)
     end
@@ -100,6 +100,7 @@ module TaskHandlers
       # if there are steps in error still, then we need to see if we have tried them
       # too many times - if we have, we need to mark the whole task as in error
       # if we have not, then we need to re-enqueue the task
+
       if error_steps.length.positive?
         too_many_attempts_steps = []
         error_steps.each do |err_step|
@@ -115,10 +116,10 @@ module TaskHandlers
         return
       end
       # determine which states were incomplete for the whole sequence before this round
-      prior_incomplete_steps =
-        sequence.steps.filter do |step|
-          !Constants::VALID_STEP_COMPLETION_STATES.include?(step.status)
-        end
+      prior_incomplete_steps = []
+      sequence.steps.each do |step|
+        prior_incomplete_steps << step unless Constants::VALID_STEP_COMPLETION_STATES.include?(step.status)
+      end
       # if nothing was incomplete, set the task to complete and save, and return
       if prior_incomplete_steps.length.zero?
         task.update({ status: Constants::TaskStatuses::COMPLETE })
@@ -127,16 +128,16 @@ module TaskHandlers
       # the steps that are passed into finalize are not the whole sequence
       # just what has been worked on in this pass, so we need to see what completed
       # in a valid state, and what has still to be done
-      this_pass_complete_steps =
-        steps.filter do |step|
-          !Constants::VALID_STEP_COMPLETION_STATES.include?(step.status)
-        end
+      this_pass_complete_steps = []
+      steps.each do |step|
+        this_pass_complete_steps << step if Constants::VALID_STEP_COMPLETION_STATES.include?(step.status)
+      end
       this_pass_complete_step_ids = this_pass_complete_steps.map(&:workflow_step_id)
       # what was incomplete from the prior pass that is still incopmlete now
-      still_incomplete_steps =
-        prior_incomplete_steps.filter do |step|
-          !this_pass_complete_step_ids.include?(step.workflow_step_id)
-        end
+      still_incomplete_steps = []
+      prior_incomplete_steps.each do |step|
+        still_incomplete_steps << step unless this_pass_complete_step_ids.include?(step.workflow_step_id)
+      end
       # if nothing is still incomplete after this pass
       # mark the task complete, update it, and return
       if still_incomplete_steps.length.zero?
@@ -144,10 +145,10 @@ module TaskHandlers
         return
       end
       # what is still working but in a valid, retryable state
-      still_working_steps =
-        still_incomplete_steps.filter do |step|
-          Constants::VALID_STEP_STILL_WORKING_STATES.include?(step.status)
-        end
+      still_working_steps = []
+      still_incomplete_steps.each do |step|
+        still_working_steps << step if Constants::VALID_STEP_STILL_WORKING_STATES.include?(step.status)
+      end
       # if we have steps that still need to be completed and in valid states
       # set the status of the task back to pending, update it,
       # and re-enqueue the task for processing

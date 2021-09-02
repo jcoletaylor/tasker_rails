@@ -96,7 +96,9 @@ class WorkflowStep < ApplicationRecord
     viable_steps = []
     unfinished_steps.each do |step|
       next if step.in_process
+      next if step.processed
       next if step.status == Constants::WorkflowStepStatuses::CANCELLED
+      next if step.status == Constants::WorkflowStepStatuses::IN_PROGRESS
       next if step.attempts.positive? && !step.retryable
       next if step.attempts >= step.retry_limit
       next if step.depends_on_step_id && unfinished_step_ids.include?(step.depends_on_step_id)

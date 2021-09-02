@@ -22,8 +22,8 @@ RSpec.describe '/tasks', type: :request do
 
   before(:all) do
     @factory = TaskHandlers::HandlerFactory.instance
-    handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
-    @task = handler.initialize_task!(
+    @handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
+    @task = @handler.initialize_task!(
       {
         name: DummyTask::TASK_REGISTRY_NAME,
         context: { dummy: :value },
@@ -69,6 +69,15 @@ RSpec.describe '/tasks', type: :request do
       expect(json_response[:task][:workflow_steps]).not_to be_nil
       expect(json_response[:task][:workflow_steps].length).to eq(4)
       expect(json_response[:task][:workflow_steps].pluck(:status)).to eq(%w[pending pending pending pending])
+    end
+    it 'renders a successful response for a completed task' do
+      @handler.handle(@task)
+      get task_url(@task), as: :json
+      expect(response).to be_successful
+      json_response = JSON.parse(response.body).deep_symbolize_keys
+      expect(json_response[:task][:task_id]).to eq(@task.task_id)
+      expect(json_response[:task][:task_annotations]).not_to be_nil
+      expect(json_response[:task][:task_annotations].length).to eq(4)
     end
   end
 
