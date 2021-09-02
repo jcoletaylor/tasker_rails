@@ -175,18 +175,7 @@ module TaskHandlers
 
       step_handler_class_map[step.name].to_s.camelize.constantize.new
     end
-
-    def handle_unknown_step(task, _sequence, step)
-      attempts = step.attempts || 0
-      step.processed = false
-      step.processed_at = nil
-      step.results = { error: "Step: #{step.name} is unknown for Task: #{task.name}" }
-      step.status = Constants::WorkflowStepStatuses::ERROR
-      step.attempts = attempts + 1
-      step.last_attempted_at = Time.zone.now
-      step
-    end
-
+  
     def get_error_steps(steps, sequence)
       error_steps = []
       sequence.steps.each do |step|
