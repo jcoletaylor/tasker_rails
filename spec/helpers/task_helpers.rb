@@ -22,7 +22,7 @@ module Helpers
       @factory ||= TaskHandlers::HandlerFactory.instance
     end
 
-    def step_defaults(options={})
+    def step_defaults(options = {})
       StepTemplate.new({
         name: STEP_ONE,
         status: Constants::WorkflowStepStatuses::PENDING,
@@ -35,7 +35,7 @@ module Helpers
       }.merge(options))
     end
 
-    def task_request(options={})
+    def task_request(options = {})
       {
         name: DUMMY_TASK,
         initiator: 'pete@test',

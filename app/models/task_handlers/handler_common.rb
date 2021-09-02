@@ -175,7 +175,7 @@ module TaskHandlers
 
       step_handler_class_map[step.name].to_s.camelize.constantize.new
     end
-  
+
     def get_error_steps(steps, sequence)
       error_steps = []
       sequence.steps.each do |step|
