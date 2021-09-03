@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 class AddSkippableToWorkflowStep < ActiveRecord::Migration[6.1]

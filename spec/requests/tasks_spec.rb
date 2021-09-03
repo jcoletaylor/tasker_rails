@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require 'rails_helper'
@@ -23,15 +24,8 @@ RSpec.describe '/tasks', type: :request do
   before(:all) do
     @factory = TaskHandlers::HandlerFactory.instance
     @handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
-    @task = @handler.initialize_task!(
-      {
-        name: DummyTask::TASK_REGISTRY_NAME,
-        context: { dummy: :value },
-        initiator: 'pete@test',
-        reason: 'setup test',
-        source_system: 'test'
-      }
-    )
+    task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value }, initiator: 'pete@test', reason: 'setup test', source_system: 'test')
+    @task = @handler.initialize_task!(task_request)
   end
 
   let(:valid_attributes) do
@@ -136,7 +130,7 @@ RSpec.describe '/tasks', type: :request do
   describe 'DELETE /destroy' do
     it 'destroys the requested task' do
       handler = @factory.get(valid_attributes[:name])
-      task = handler.initialize_task!(valid_attributes.merge({ reason: 'delete test' }))
+      task = handler.initialize_task!(TaskRequest.new(valid_attributes.merge({ reason: 'delete test' })))
       delete task_url(task), headers: valid_headers, as: :json
       task.reload
       expect(task.status).to eq(Constants::TaskStatuses::CANCELLED)

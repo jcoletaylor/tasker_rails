@@ -1,7 +1,9 @@
+# typed: false
 # frozen_string_literal: true
 
 module TaskHandlers
   module HandlerCommon
+    extend T::Sig
     attr_accessor :step_handler_class_map, :step_templates
 
     def initialize
@@ -12,25 +14,28 @@ module TaskHandlers
       register_step_handler_classes
     end
 
-    def initialize_task!(requested_task)
-      rq = requested_task.dup
-      task_name = rq.delete(:name)
-      context = rq.delete(:context)
+    # typed: true
+    sig { params(task_request: TaskRequest).returns(Task) }
+    def initialize_task!(task_request)
       task = nil
       Task.transaction do
-        task = Task.create_with_defaults!(task_name, context, rq)
+        task = Task.create_with_defaults!(task_request)
         get_sequence(task)
       end
       enqueue_task(task)
       task
     end
 
+    # typed: true
+    sig { params(task: Task).returns(StepSequence) }
     def get_sequence(task)
       steps = WorkflowStep.get_steps_for_task(task, step_templates)
       establish_step_dependencies_and_defaults(task, steps)
       StepSequence.new(steps: steps)
     end
 
+    # typed: true
+    sig { params(task: Task).returns(T::Boolean) }
     def start_task(task)
       raise TaskHandlers::ProceduralError, "task already complete for task #{task.task_id}" if task.complete
 
@@ -92,6 +97,9 @@ module TaskHandlers
     # if there are still valid workable steps
     # we could break it down into components, but I think it may be
     # harder to reason about
+
+    # typed: true
+    sig { params(task: Task, sequence: StepSequence, steps: T::Array[WorkflowStep]).void }
     def finalize(task, sequence, steps)
       # how many steps in this round are in an error state before, and based on
       # being processed in this round of handling, is it still in an error state
@@ -200,14 +208,20 @@ module TaskHandlers
       error_steps
     end
 
+    # typed: true
+    sig { params(task: Task).void }
     def enqueue_task(task)
       TaskRunnerJob.perform_async(task.task_id)
     end
 
     # override in implementing class
+    # typed: true
+    sig { params(task: Task, steps: T::Array[WorkflowStep]).void }
     def establish_step_dependencies_and_defaults(task, steps); end
 
     # override in implementing class
+    # typed: true
+    sig { params(task: Task, sequence: StepSequence, steps: T::Array[WorkflowStep]).void }
     def update_annotations(task, sequence, steps); end
 
     # override in implementing class

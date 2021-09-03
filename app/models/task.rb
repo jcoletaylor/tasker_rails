@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require 'digest'
@@ -36,6 +37,8 @@ require 'digest'
 #  tasks_named_task_id_foreign  (named_task_id => named_tasks.named_task_id)
 #
 class Task < ApplicationRecord
+  extend T::Sig
+
   self.primary_key = :task_id
   after_initialize :init_defaults, if: :new_record?
   belongs_to :named_task
@@ -50,22 +53,23 @@ class Task < ApplicationRecord
 
   delegate :name, to: :named_task
 
-  def self.create_with_defaults!(
-    task_name,
-    context,
+  # typed: true
+  sig { params(task_request: TaskRequest).returns(Task) }
+  def self.create_with_defaults!(task_request)
+    named_task = NamedTask.find_or_create_by!(name: task_request.name)
     options = {
-      status: Constants::TaskStatuses::PENDING,
-      initiator: Constants::UNKNOWN,
-      source_system: Constants::UNKNOWN,
-      reason: Constants::UNKNOWN,
+      status: task_request.status || Constants::TaskStatuses::PENDING,
+      initiator: task_request.initiator || Constants::UNKNOWN,
+      source_system: task_request.source_system || Constants::UNKNOWN,
+      reason: task_request.reason || Constants::UNKNOWN,
       complete: false,
-      tags: [],
-      bypass_steps: [],
-      requested_at: Time.zone.now
+      tags: task_request.tags || [],
+      bypass_steps: task_request.bypass_steps || [],
+      requested_at: task_request.requested_at || Time.zone.now,
+      context: task_request.context,
+      named_task_id: named_task.named_task_id
     }
-  )
-    named_task = NamedTask.find_or_create_by!(name: task_name)
-    task = Task.new(options.merge({ named_task_id: named_task.named_task_id, context: context }))
+    task = Task.new(options)
     task.named_task = named_task
     task.save!
     task

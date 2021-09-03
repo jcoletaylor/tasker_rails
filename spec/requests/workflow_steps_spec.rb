@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require 'rails_helper'
@@ -19,15 +20,8 @@ RSpec.describe '/tasks/:task_id/workflow_steps', type: :request do
   before(:all) do
     @factory = TaskHandlers::HandlerFactory.instance
     handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
-    @task = handler.initialize_task!(
-      {
-        name: DummyTask::TASK_REGISTRY_NAME,
-        context: { dummy: :value },
-        initiator: 'pete@test',
-        reason: 'setup workflow step test',
-        source_system: 'test'
-      }
-    )
+    task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value }, initiator: 'pete@test', reason: 'setup workflow step test', source_system: 'test')
+    @task = handler.initialize_task!(task_request)
   end
   # This should return the minimal set of attributes required to create a valid
   # WorkflowStep. As you add validations to WorkflowStep, be sure to
