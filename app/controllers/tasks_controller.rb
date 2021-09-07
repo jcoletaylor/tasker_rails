@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class TasksController < ApplicationController
@@ -26,7 +27,7 @@ class TasksController < ApplicationController
   def create
     begin
       handler = handler_factory.get(task_params[:name])
-      @task = handler.initialize_task!(task_params)
+      @task = handler.initialize_task!(TaskRequest.new(task_params))
     rescue TaskHandlers::ProceduralError => e
       @task = Task.new
       @task.errors.add(:name, e.to_s)

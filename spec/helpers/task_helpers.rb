@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 require 'rails_helper'
@@ -36,7 +37,7 @@ module Helpers
     end
 
     def task_request(options = {})
-      {
+      TaskRequest.new({
         name: DUMMY_TASK,
         initiator: 'pete@test',
         reason: 'testing!',
@@ -44,7 +45,7 @@ module Helpers
         source_system: 'test-system',
         context: { dummy: true },
         tags: %w[dummy testing]
-      }.merge(options)
+      }.merge(options))
     end
 
     def mark_step_complete(step)

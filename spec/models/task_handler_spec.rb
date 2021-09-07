@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require 'rails_helper'
@@ -18,7 +19,8 @@ RSpec.describe 'TaskHandlers', type: :model do
     end
     it 'should be able to initialize a task' do
       task_handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
-      task = task_handler.initialize_task!(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value })
+      task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value })
+      task = task_handler.initialize_task!(task_request)
       expect(task).to be_valid
       expect(task.save).to be_truthy
       task.reload
@@ -26,7 +28,8 @@ RSpec.describe 'TaskHandlers', type: :model do
     end
     it 'should be able to initialize and handle a task' do
       task_handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
-      task = task_handler.initialize_task!(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value })
+      task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value })
+      task = task_handler.initialize_task!(task_request)
       task_handler.handle(task)
       task.reload
       step_states = task.workflow_steps.map(&:status)

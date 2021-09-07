@@ -1,7 +1,9 @@
+# typed: strict
 # frozen_string_literal: true
 
 require 'simplecov'
 require 'sidekiq/testing'
+require 'rspec/sorbet'
 
 SimpleCov.start 'rails'
 
