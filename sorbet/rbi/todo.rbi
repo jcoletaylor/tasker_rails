@@ -12,3 +12,5 @@ module Rack::QueryParser::ParameterTypeError; end
 module Rack::QueryParser::Params; end
 module Rack::Request::Env; end
 module Rack::Response::Helpers; end
+module T::Private::Methods::MethodHooks; end
+module T::Private::Methods::SingletonMethodHooks; end

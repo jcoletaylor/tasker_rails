@@ -1,4 +1,4 @@
-# typed: false
+# typed: ignore
 # frozen_string_literal: true
 
 module TaskHandlers
@@ -44,6 +44,8 @@ module TaskHandlers
       task.update({ status: Constants::TaskStatuses::IN_PROGRESS })
     end
 
+    # typed: true
+    sig { params(task: Task).void }
     def handle(task)
       start_task(task)
       sequence = get_sequence(task)
@@ -61,6 +63,8 @@ module TaskHandlers
       finalize(task, sequence, steps)
     end
 
+    # typed: true
+    sig { params(task: Task, sequence: StepSequence, step: WorkflowStep).returns(WorkflowStep) }
     def handle_one_step(task, sequence, step)
       handler = get_step_handler(step)
       attempts = step.attempts || 0
@@ -81,6 +85,8 @@ module TaskHandlers
       step
     end
 
+    # typed: true
+    sig { params(task: Task, sequence: StepSequence, steps: T::Array[WorkflowStep]).returns(T::Array[WorkflowStep]) }
     def handle_viable_steps(task, sequence, steps)
       steps.each do |step|
         handle_one_step(task, sequence, step)

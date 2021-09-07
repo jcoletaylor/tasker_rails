@@ -21,7 +21,34 @@
 #  named_steps_dependent_system_id_foreign  (dependent_system_id => dependent_systems.dependent_system_id)
 #
 require 'rails_helper'
+require_relative '../mocks/dummy_task'
 
 RSpec.describe NamedStep, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  context 'class methods' do
+    it 'should be able to create named steps from step templates' do
+      templates = [
+        StepTemplate.new(
+          dependent_system: 'dummy-system',
+          name: 'step-one',
+          description: 'Independent Step One',
+          default_retryable: true,
+          default_retry_limit: 3,
+          skippable: false,
+          handler_class: DummyTask::Handler
+        ),
+        StepTemplate.new(
+          dependent_system: 'dummy-system',
+          name: 'step-two',
+          description: 'Independent Step Two',
+          default_retryable: true,
+          default_retry_limit: 3,
+          skippable: false,
+          handler_class: DummyTask::Handler
+        )
+      ]
+      named_steps = NamedStep.create_named_steps_from_templates(templates)
+      expect(named_steps.length.positive?).to be_truthy
+      expect(named_steps.map(&:name)).to eq(%w[step-one step-two])
+    end
+  end
 end

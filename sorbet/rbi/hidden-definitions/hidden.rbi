@@ -36763,6 +36763,12 @@ end
 
 RSpec::SharedContext = RSpec::Core::SharedContext
 
+module RSpec::Sorbet::Doubles
+  INLINE_DOUBLE_REGEX = ::T.let(nil, ::T.untyped)
+  TYPED_ARRAY_MESSAGE = ::T.let(nil, ::T.untyped)
+  VERIFYING_DOUBLE_OR_DOUBLE = ::T.let(nil, ::T.untyped)
+end
+
 module RSpec::Support
   DEFAULT_FAILURE_NOTIFIER = ::T.let(nil, ::T.untyped)
   DEFAULT_WARNING_NOTIFIER = ::T.let(nil, ::T.untyped)
@@ -45008,6 +45014,8 @@ module Task::GeneratedAttributeMethods
 end
 
 class Task
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
   def self.after_add_for_task_annotations(); end
 
   def self.after_add_for_task_annotations=(value); end
@@ -45086,6 +45094,17 @@ module TaskAnnotation::GeneratedAttributeMethods
 end
 
 class TaskAnnotationSerializer
+end
+
+module TaskHandlers::HandlerCommon
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
+end
+
+class TaskRequest
+  def self.[](*arg); end
+
+  def self.members(); end
 end
 
 class TaskRunnerJob

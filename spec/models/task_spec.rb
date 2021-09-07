@@ -48,7 +48,7 @@ RSpec.describe Task, type: :model do
       expect do
         Task.create_with_defaults!(task_request)
       end.to raise_error(ActiveRecord::RecordInvalid)
-      
+
       task_request = TaskRequest.new(name: 'dummy_action', context: { some: :value }, requested_at: 2.minutes.from_now)
       # but should be able to do it if it is requested far enough apart
       expect do

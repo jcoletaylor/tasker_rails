@@ -21,11 +21,15 @@
 #  named_steps_dependent_system_id_foreign  (dependent_system_id => dependent_systems.dependent_system_id)
 #
 class NamedStep < ApplicationRecord
+  extend T::Sig
+
   self.primary_key = :named_step_id
   belongs_to :dependent_system
   has_many :workflow_steps, dependent: :destroy
   validates :name, presence: true, uniqueness: { scope: :dependent_system_id }
 
+  # typed: true
+  sig { params(templates: T::Array[StepTemplate]).returns(T::Array[NamedStep]) }
   def self.create_named_steps_from_templates(templates)
     named_steps =
       templates.map do |template|
