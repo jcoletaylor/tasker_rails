@@ -23,8 +23,8 @@ class DummyTask
 
   def update_annotations(task, _sequence, steps)
     annotatable_steps = steps.filter { |step| step.status == Constants::WorkflowStepStatuses::COMPLETE }
+    annotation_type = AnnotationType.find_or_create_by!(name: ANNOTATION_TYPE)
     annotatable_steps.each do |step|
-      annotation_type = AnnotationType.find_or_create_by!(name: ANNOTATION_TYPE)
       TaskAnnotation.create(
         task: task,
         task_id: task.task_id,
