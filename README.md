@@ -2,13 +2,15 @@
 
 * Ruby version - 2.7.3
 
-* System dependencies - Redis and Sidekiq
+* System dependencies - Postgres, Redis, and Sidekiq
 
 * Database - `bundle exec rake db:schema:load`
 
 * How to run the test suite - `bundle exec rspec spec`
 
-* Services - Sidekiq
+* Lint: `bundle exec rake lint`
+
+* Typecheck with Sorbet: `bundle exec srb tc`
 
 ## ABOUT
 
