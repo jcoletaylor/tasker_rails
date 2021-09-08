@@ -33,7 +33,9 @@ class TasksController < ApplicationController
       @task.errors.add(:name, e.to_s)
     end
 
-    if @task.save
+    # we don't want to re-run save here because it will remove the
+    # context validation from the handler and check "valid?"
+    if @task.errors.empty?
       render json: @task, status: :created, adapter: :json
     else
       render status: :unprocessable_entity, json: { error: @task.errors }

@@ -104,6 +104,14 @@ RSpec.describe '/tasks', type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.content_type).to match(a_string_including('application/json'))
       end
+
+      it 'renders context errors' do
+        task_attributes = valid_attributes.merge({ context: { bad_param: true, dummy: 99 } })
+        post tasks_url, params: { task: task_attributes }, headers: valid_headers, as: :json
+        expect(response).to have_http_status(:unprocessable_entity)
+        json_response = JSON.parse(response.body).deep_symbolize_keys
+        expect(json_response[:error][:context]).not_to be_nil
+      end
     end
   end
 
