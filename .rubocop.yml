@@ -52,9 +52,11 @@ Style/RescueStandardError:
     # an error getting evidence, we treat it as no evidence.
     - 'app/lib/evidence.rb'
 Metrics/AbcSize:
-  Max: 20
+  Max: 30
   Exclude:
     - 'db/migrate/*'
+Metrics/ModuleLength:
+  Max: 250
 Metrics/ClassLength:
   Exclude:
     - 'db/migrate/*'
@@ -64,11 +66,21 @@ Layout/LineLength:
   # Exclude:
   #   - 'db/migrate/*'
 Metrics/MethodLength:
- Exclude:
-   - 'db/migrate/*'
+  Max: 30
+  Exclude:
+    - 'db/migrate/*'
+Metrics/BlockLength:
+  Max: 30
+  Exclude:
+    - 'db/migrate/*'
+    - 'db/schema.rb'
+    - 'spec/**/*.rb'
 Rails/SkipsModelValidations:
   Exclude:
-    - 'test/**/*.rb'
+    - 'spec/**/*.rb'
+Style/MethodCalledOnDoEndBlock:
+  Exclude:
+    - 'spec/**/*.rb'
 Style/Copyright:
   Enabled: false
 Style/InlineComment:
