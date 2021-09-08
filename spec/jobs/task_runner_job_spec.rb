@@ -13,7 +13,7 @@ RSpec.describe TaskRunnerJob, type: :job do
       DependentSystem.find_or_create_by!(name: Helpers::TaskHelpers::DEPENDENT_SYSTEM)
     end
     it 'should be able to perform a task job' do
-      task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value })
+      task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: true })
       task = @task_handler.initialize_task!(task_request)
       runner = TaskRunnerJob.new
       runner.perform(task.task_id)
