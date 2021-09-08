@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 class DummyTask
@@ -15,6 +15,10 @@ class DummyTask
     def handle(_task, _sequence, step)
       step.results = { dummy: true }
     end
+  end
+
+  def schema
+    @schema ||= { type: :object, required: [:dummy], properties: { dummy: { type: 'boolean' } } }
   end
 
   def update_annotations(task, _sequence, steps)

@@ -24,12 +24,12 @@ RSpec.describe '/tasks', type: :request do
   before(:all) do
     @factory = TaskHandlers::HandlerFactory.instance
     @handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
-    task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value }, initiator: 'pete@test', reason: 'setup test', source_system: 'test')
+    task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: true }, initiator: 'pete@test', reason: 'setup test', source_system: 'test')
     @task = @handler.initialize_task!(task_request)
   end
 
   let(:valid_attributes) do
-    { name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: :value }, initiator: 'pete@test', reason: 'basic test', source_system: 'test' }
+    { name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: true }, initiator: 'pete@test', reason: 'basic test', source_system: 'test' }
   end
 
   let(:invalid_attributes) do

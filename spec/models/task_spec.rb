@@ -39,7 +39,7 @@ require 'rails_helper'
 RSpec.describe Task, type: :model do
   describe 'task creation' do
     it 'should be able to create with defaults' do
-      task_request = TaskRequest.new(name: 'dummy_action', context: { some: :value })
+      task_request = TaskRequest.new(name: 'dummy_action', context: { dummy: true })
       task = Task.create_with_defaults!(task_request)
       expect(task.save).to be_truthy
       expect(task.task_id).not_to be_nil
@@ -49,7 +49,7 @@ RSpec.describe Task, type: :model do
         Task.create_with_defaults!(task_request)
       end.to raise_error(ActiveRecord::RecordInvalid)
 
-      task_request = TaskRequest.new(name: 'dummy_action', context: { some: :value }, requested_at: 2.minutes.from_now)
+      task_request = TaskRequest.new(name: 'dummy_action', context: { dummy: true }, requested_at: 2.minutes.from_now)
       # but should be able to do it if it is requested far enough apart
       expect do
         Task.create_with_defaults!(task_request)

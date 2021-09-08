@@ -56,6 +56,14 @@ class Task < ApplicationRecord
   # typed: true
   sig { params(task_request: TaskRequest).returns(Task) }
   def self.create_with_defaults!(task_request)
+    task = from_task_request(task_request)
+    task.save!
+    task
+  end
+
+  # typed: true
+  sig { params(task_request: TaskRequest).returns(Task) }
+  def self.from_task_request(task_request)
     named_task = NamedTask.find_or_create_by!(name: task_request.name)
     options = {
       status: task_request.status || Constants::TaskStatuses::PENDING,
@@ -71,7 +79,6 @@ class Task < ApplicationRecord
     }
     task = Task.new(options)
     task.named_task = named_task
-    task.save!
     task
   end
 

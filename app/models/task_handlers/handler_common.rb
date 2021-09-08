@@ -1,5 +1,7 @@
-# typed: ignore
+# typed: false
 # frozen_string_literal: true
+
+require 'json-schema'
 
 module TaskHandlers
   module HandlerCommon
@@ -18,6 +20,14 @@ module TaskHandlers
     sig { params(task_request: TaskRequest).returns(Task) }
     def initialize_task!(task_request)
       task = nil
+      context_errors = validate_context(task_request.context)
+      if context_errors.length.positive?
+        task = Task.from_task_request(task_request)
+        context_errors.each do |error|
+          task.errors.add(:context, error)
+        end
+        return task
+      end
       Task.transaction do
         task = Task.create_with_defaults!(task_request)
         get_sequence(task)
@@ -233,6 +243,19 @@ module TaskHandlers
     # override in implementing class
     def register_step_templates
       self.step_templates = []
+    end
+
+    # override in implementing class
+    def schema
+      nil
+    end
+
+    def validate_context(context)
+      return [] unless schema
+
+      data = context.to_hash.deep_symbolize_keys
+      errors = JSON::Validator.fully_validate(schema, data, strict: true, insert_defaults: true)
+      errors
     end
   end
 end
