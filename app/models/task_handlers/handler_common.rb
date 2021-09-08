@@ -1,6 +1,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require 'json-schema'
+
 module TaskHandlers
   module HandlerCommon
     extend T::Sig
@@ -244,8 +246,16 @@ module TaskHandlers
     end
 
     # override in implementing class
-    def validate_context(_context)
-      []
+    def schema
+      nil
+    end
+
+    def validate_context(context)
+      return [] unless schema
+
+      data = context.to_hash.deep_symbolize_keys
+      errors = JSON::Validator.fully_validate(schema, data, strict: true, insert_defaults: true)
+      errors
     end
   end
 end

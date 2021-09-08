@@ -24183,6 +24183,102 @@ module ActiveSupport
   def self.version(); end
 end
 
+module Addressable::IDNA
+  ACE_MAX_LENGTH = ::T.let(nil, ::T.untyped)
+  ACE_PREFIX = ::T.let(nil, ::T.untyped)
+  COMPOSITION_TABLE = ::T.let(nil, ::T.untyped)
+  HANGUL_LBASE = ::T.let(nil, ::T.untyped)
+  HANGUL_LCOUNT = ::T.let(nil, ::T.untyped)
+  HANGUL_NCOUNT = ::T.let(nil, ::T.untyped)
+  HANGUL_SBASE = ::T.let(nil, ::T.untyped)
+  HANGUL_SCOUNT = ::T.let(nil, ::T.untyped)
+  HANGUL_TBASE = ::T.let(nil, ::T.untyped)
+  HANGUL_TCOUNT = ::T.let(nil, ::T.untyped)
+  HANGUL_VBASE = ::T.let(nil, ::T.untyped)
+  HANGUL_VCOUNT = ::T.let(nil, ::T.untyped)
+  PUNYCODE_BASE = ::T.let(nil, ::T.untyped)
+  PUNYCODE_DAMP = ::T.let(nil, ::T.untyped)
+  PUNYCODE_DELIMITER = ::T.let(nil, ::T.untyped)
+  PUNYCODE_INITIAL_BIAS = ::T.let(nil, ::T.untyped)
+  PUNYCODE_INITIAL_N = ::T.let(nil, ::T.untyped)
+  PUNYCODE_MAXINT = ::T.let(nil, ::T.untyped)
+  PUNYCODE_PRINT_ASCII = ::T.let(nil, ::T.untyped)
+  PUNYCODE_SKEW = ::T.let(nil, ::T.untyped)
+  PUNYCODE_TMAX = ::T.let(nil, ::T.untyped)
+  PUNYCODE_TMIN = ::T.let(nil, ::T.untyped)
+  UNICODE_DATA = ::T.let(nil, ::T.untyped)
+  UNICODE_DATA_CANONICAL = ::T.let(nil, ::T.untyped)
+  UNICODE_DATA_COMBINING_CLASS = ::T.let(nil, ::T.untyped)
+  UNICODE_DATA_COMPATIBILITY = ::T.let(nil, ::T.untyped)
+  UNICODE_DATA_EXCLUSION = ::T.let(nil, ::T.untyped)
+  UNICODE_DATA_LOWERCASE = ::T.let(nil, ::T.untyped)
+  UNICODE_DATA_TITLECASE = ::T.let(nil, ::T.untyped)
+  UNICODE_DATA_UPPERCASE = ::T.let(nil, ::T.untyped)
+  UNICODE_MAX_LENGTH = ::T.let(nil, ::T.untyped)
+  UNICODE_TABLE = ::T.let(nil, ::T.untyped)
+  UTF8_REGEX = ::T.let(nil, ::T.untyped)
+  UTF8_REGEX_MULTIBYTE = ::T.let(nil, ::T.untyped)
+end
+
+class Addressable::Template
+  EXPRESSION = ::T.let(nil, ::T.untyped)
+  JOINERS = ::T.let(nil, ::T.untyped)
+  LEADERS = ::T.let(nil, ::T.untyped)
+  RESERVED = ::T.let(nil, ::T.untyped)
+  UNRESERVED = ::T.let(nil, ::T.untyped)
+  VARIABLE_LIST = ::T.let(nil, ::T.untyped)
+  VARNAME = ::T.let(nil, ::T.untyped)
+  VARSPEC = ::T.let(nil, ::T.untyped)
+end
+
+class Addressable::URI
+  EMPTY_STR = ::T.let(nil, ::T.untyped)
+  NORMPATH = ::T.let(nil, ::T.untyped)
+  PARENT = ::T.let(nil, ::T.untyped)
+  PORT_MAPPING = ::T.let(nil, ::T.untyped)
+  RULE_2A = ::T.let(nil, ::T.untyped)
+  RULE_2B_2C = ::T.let(nil, ::T.untyped)
+  RULE_2D = ::T.let(nil, ::T.untyped)
+  RULE_PREFIXED_PARENT = ::T.let(nil, ::T.untyped)
+  SELF_REF = ::T.let(nil, ::T.untyped)
+  SEQUENCE_ENCODING_TABLE = ::T.let(nil, ::T.untyped)
+  SEQUENCE_UPCASED_PERCENT_ENCODING_TABLE = ::T.let(nil, ::T.untyped)
+  SLASH = ::T.let(nil, ::T.untyped)
+  URIREGEX = ::T.let(nil, ::T.untyped)
+end
+
+module Addressable::URI::CharacterClasses
+  ALPHA = ::T.let(nil, ::T.untyped)
+  AUTHORITY = ::T.let(nil, ::T.untyped)
+  DIGIT = ::T.let(nil, ::T.untyped)
+  FRAGMENT = ::T.let(nil, ::T.untyped)
+  GEN_DELIMS = ::T.let(nil, ::T.untyped)
+  HOST = ::T.let(nil, ::T.untyped)
+  PATH = ::T.let(nil, ::T.untyped)
+  PCHAR = ::T.let(nil, ::T.untyped)
+  QUERY = ::T.let(nil, ::T.untyped)
+  RESERVED = ::T.let(nil, ::T.untyped)
+  SCHEME = ::T.let(nil, ::T.untyped)
+  SUB_DELIMS = ::T.let(nil, ::T.untyped)
+  UNRESERVED = ::T.let(nil, ::T.untyped)
+end
+
+module Addressable::URI::NormalizeCharacterClasses
+  FRAGMENT = ::T.let(nil, ::T.untyped)
+  HOST = ::T.let(nil, ::T.untyped)
+  PCHAR = ::T.let(nil, ::T.untyped)
+  QUERY = ::T.let(nil, ::T.untyped)
+  SCHEME = ::T.let(nil, ::T.untyped)
+  UNRESERVED = ::T.let(nil, ::T.untyped)
+end
+
+module Addressable::VERSION
+  MAJOR = ::T.let(nil, ::T.untyped)
+  MINOR = ::T.let(nil, ::T.untyped)
+  STRING = ::T.let(nil, ::T.untyped)
+  TINY = ::T.let(nil, ::T.untyped)
+end
+
 class Addrinfo
   def connect_internal(local_addrinfo, timeout=T.unsafe(nil)); end
 end
@@ -31689,9 +31785,41 @@ end
 
 JSON::Parser = JSON::Ext::Parser
 
+class JSON::Schema::Attribute
+  TYPE_CLASS_MAPPINGS = ::T.let(nil, ::T.untyped)
+end
+
+class JSON::Schema::DateFormat
+  REGEXP = ::T.let(nil, ::T.untyped)
+end
+
+class JSON::Schema::DateTimeFormat
+  REGEXP = ::T.let(nil, ::T.untyped)
+end
+
+class JSON::Schema::TimeFormat
+  REGEXP = ::T.let(nil, ::T.untyped)
+end
+
+class JSON::Schema::ValidationError
+  INDENT = ::T.let(nil, ::T.untyped)
+end
+
 JSON::State = JSON::Ext::Generator::State
 
 JSON::UnparserError = JSON::GeneratorError
+
+module JSON::Util::URI
+  SUPPORTED_PROTOCOLS = ::T.let(nil, ::T.untyped)
+end
+
+class JSON::Util::UUID
+  NameSpace_DNS = ::T.let(nil, ::T.untyped)
+  NameSpace_OID = ::T.let(nil, ::T.untyped)
+  NameSpace_URL = ::T.let(nil, ::T.untyped)
+  NameSpace_X500 = ::T.let(nil, ::T.untyped)
+  Nil = ::T.let(nil, ::T.untyped)
+end
 
 module Kernel
   include ::ActiveSupport::ForkTracker::CoreExtPrivate
@@ -32840,6 +32968,8 @@ module NamedStep::GeneratedAttributeMethods
 end
 
 class NamedStep
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
   def self.after_add_for_workflow_steps(); end
 
   def self.after_add_for_workflow_steps=(value); end
@@ -33009,6 +33139,8 @@ class Net::HTTPEarlyHints
 end
 
 Net::HTTPFatalErrorCode = Net::HTTPClientError
+
+Net::HTTPInformation::EXCEPTION_TYPE = Net::HTTPError
 
 Net::HTTPInformationCode = Net::HTTPInformation
 
@@ -33756,6 +33888,58 @@ end
 
 class OpenStruct
   VERSION = ::T.let(nil, ::T.untyped)
+end
+
+class OpenURI::Buffer
+  def <<(str); end
+
+  def io(); end
+
+  def size(); end
+  StringMax = ::T.let(nil, ::T.untyped)
+end
+
+class OpenURI::Buffer
+end
+
+class OpenURI::HTTPError
+  def initialize(message, io); end
+end
+
+class OpenURI::HTTPRedirect
+  def initialize(message, io, uri); end
+end
+
+module OpenURI::Meta
+  def content_type_parse(); end
+
+  def meta_add_field(name, value); end
+
+  def meta_add_field2(name, values); end
+
+  def meta_setup_encoding(); end
+  RE_LWS = ::T.let(nil, ::T.untyped)
+  RE_PARAMETERS = ::T.let(nil, ::T.untyped)
+  RE_QUOTED_STRING = ::T.let(nil, ::T.untyped)
+  RE_TOKEN = ::T.let(nil, ::T.untyped)
+end
+
+module OpenURI::Meta
+  def self.init(obj, src=T.unsafe(nil)); end
+end
+
+module OpenURI
+  def self.check_options(options); end
+
+  def self.open_http(buf, target, proxy, options); end
+
+  def self.open_loop(uri, options); end
+
+  def self.open_uri(name, *rest); end
+
+  def self.redirectable?(uri1, uri2); end
+
+  def self.scan_open_optional_arguments(*rest); end
 end
 
 class OptionParser
@@ -35865,6 +36049,17 @@ module Psych
   def self.load_tags=(load_tags); end
 
   def self.remove_type(type_tag); end
+end
+
+module PublicSuffix
+  BANG = ::T.let(nil, ::T.untyped)
+  DOT = ::T.let(nil, ::T.untyped)
+  STAR = ::T.let(nil, ::T.untyped)
+  VERSION = ::T.let(nil, ::T.untyped)
+end
+
+class PublicSuffix::List
+  DEFAULT_LIST_PATH = ::T.let(nil, ::T.untyped)
 end
 
 module Puma
@@ -45278,6 +45473,10 @@ module URI
 end
 
 class URI::FTP
+  def buffer_open(buf, proxy, options); end
+end
+
+class URI::FTP
   def self.new2(user, password, host, port, path, typecode=T.unsafe(nil), arg_check=T.unsafe(nil)); end
 end
 
@@ -45328,6 +45527,10 @@ class URI::GID
   def self.parse(uri); end
 
   def self.validate_app(app); end
+end
+
+class URI::HTTP
+  def buffer_open(buf, proxy, options); end
 end
 
 class URI::LDAP
@@ -45394,6 +45597,8 @@ end
 module URI
   extend ::URI::Escape
   def self.get_encoding(label); end
+
+  def self.open(name, *rest, &block); end
 
   def self.parser(); end
 end

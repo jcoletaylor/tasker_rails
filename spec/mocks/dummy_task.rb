@@ -1,7 +1,5 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
-
-require 'json-schema'
 
 class DummyTask
   include TaskHandlers::HandlerCommon
@@ -20,21 +18,7 @@ class DummyTask
   end
 
   def schema
-    @schema ||= {
-      type: :object,
-      required: [:dummy],
-      properties: {
-        dummy: {
-          type: 'boolean'
-        }
-      }
-    }
-  end
-
-  def validate_context(context)
-    data = context.to_hash.deep_symbolize_keys
-    errors = JSON::Validator.fully_validate(schema, data, strict: true, insert_defaults: true)
-    errors
+    @schema ||= { type: :object, required: [:dummy], properties: { dummy: { type: 'boolean' } } }
   end
 
   def update_annotations(task, _sequence, steps)
