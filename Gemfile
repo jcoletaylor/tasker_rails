@@ -60,7 +60,7 @@ group :test do
   gem 'simplecov', require: false
   gem 'rspec-sorbet'
   # FFI local
-  gem 'dummy_rust_task_handler', '>= 0.1.0', path: './crates/dummy_rust_task_handler'
+  gem 'dummy_rust_task_handler', '>= 0.1.0', path: './gems/dummy_rust_task_handler'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
