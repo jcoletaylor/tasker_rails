@@ -207,9 +207,9 @@ pub extern "C" fn handle(inputs: *const c_char) -> *const c_char {
 
 A sample TaskHandler for a WorkflowStep has been implemented in Rust using Ruby-FFI.
 
-Check out the [crate](./crates/dummy_rust_task_handler). To rebuild the gem for test on your own system, do this:
+Check out the [gem](./gems/dummy_rust_task_handler). To rebuild the gem for test on your own system, do this:
 
-`cd crates/dummy_rust_task_handler; rake clean && rake build`
+`cd gems/dummy_rust_task_handler; rake clean && rake build`
 
 Of course this assumes you have [Rust installed](https://www.rust-lang.org/tools/install).
 
