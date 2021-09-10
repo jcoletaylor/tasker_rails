@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require 'dummy_rust_task_handler'
+
 class DummyTask
   include TaskHandlers::HandlerCommon
   DUMMY_SYSTEM = 'dummy-system'
@@ -14,6 +16,13 @@ class DummyTask
   class Handler
     def handle(_task, _sequence, step)
       step.results = { dummy: true }
+    end
+  end
+
+  class RustyHandler
+    def handle(_task, _sequence, step)
+      rusty_results = DummyRustTaskHandler::Handler.handle(step.inputs)
+      step.results = rusty_results
     end
   end
 
@@ -72,11 +81,11 @@ class DummyTask
         dependent_system: DUMMY_SYSTEM,
         name: STEP_FOUR,
         depends_on_step: STEP_THREE,
-        description: 'Step Four Dependent on Step Three',
+        description: 'Step Four Dependent on Step Three using a Gem wrapping a Rust FFI',
         default_retryable: true,
         default_retry_limit: 3,
         skippable: false,
-        handler_class: DummyTask::Handler
+        handler_class: DummyTask::RustyHandler
       )
     ]
   end

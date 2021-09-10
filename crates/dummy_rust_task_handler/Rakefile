@@ -1,0 +1,19 @@
+require 'bundler/gem_tasks'
+require 'rspec/core/rake_task'
+require 'ffi'
+
+task :rust_build do
+  `cargo rustc --release`
+  `mv -f ./target/release/libdummy_rust_task_handler.#{FFI::Platform::LIBSUFFIX} ./lib/dummy_rust_task_handler`
+end
+
+task :rust_clean do
+  `cargo clean`
+  `rm -f ./lib/dummy_rust_task_handler/libdummy_rust_task_handler.#{FFI::Platform::LIBSUFFIX}`
+end
+
+task clean: :rust_clean
+
+task build: :rust_build
+
+task default: :build
