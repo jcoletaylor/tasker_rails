@@ -12,6 +12,16 @@
 
 * Typecheck with Sorbet: `bundle exec srb tc`
 
+## Rust and Ruby-FFI
+
+A sample TaskHandler for a WorkflowStep has been implemented in Rust using Ruby-FFI.
+
+Check out the [crate](./crates/dummy_rust_task_handler). To rebuild the gem for test on your own system, do this:
+
+`cd crates/dummy_rust_task_handler; rake clean && rake build`
+
+Of course this assumes you have [Rust installed](https://www.rust-lang.org/tools/install).
+
 ## ABOUT
 
 Tasker is designed to make developing queuable multi-step tasks more straightforward.
