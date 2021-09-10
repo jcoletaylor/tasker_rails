@@ -61,7 +61,7 @@ class DummyTask
     end
   end
 
-  # a class to abstract handling inputs to a rust process
+  # a class to abstract handling inputs to a dylib/so library built in rust
   # inputs can come from the step or the task - any structure
   # that is serializable to JSON
   class RustyHandler
