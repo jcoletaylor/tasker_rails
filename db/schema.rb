@@ -1,4 +1,3 @@
-# typed: false
 # frozen_string_literal: true
 
 # This file is auto-generated from the current state of the database. Instead
@@ -13,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_210_827_013_425) do
+ActiveRecord::Schema.define(version: 20_210_913_132_203) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -94,6 +93,7 @@ ActiveRecord::Schema.define(version: 20_210_827_013_425) do
     t.string 'identity_hash', limit: 128, null: false
     t.index ['context'], name: 'tasks_context_idx', using: :gin
     t.index ['context'], name: 'tasks_context_idx1', opclass: :jsonb_path_ops, using: :gin
+    t.index ['identity_hash'], name: 'index_tasks_on_identity_hash', unique: true
     t.index ['identity_hash'], name: 'tasks_identity_hash_index'
     t.index ['named_task_id'], name: 'tasks_named_task_id_index'
     t.index ['requested_at'], name: 'tasks_requested_at_index'

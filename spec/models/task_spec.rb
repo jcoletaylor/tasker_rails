@@ -20,15 +20,16 @@
 #
 # Indexes
 #
-#  tasks_context_idx          (context) USING gin
-#  tasks_context_idx1         (context) USING gin
-#  tasks_identity_hash_index  (identity_hash)
-#  tasks_named_task_id_index  (named_task_id)
-#  tasks_requested_at_index   (requested_at)
-#  tasks_source_system_index  (source_system)
-#  tasks_status_index         (status)
-#  tasks_tags_idx             (tags) USING gin
-#  tasks_tags_idx1            (tags) USING gin
+#  index_tasks_on_identity_hash  (identity_hash) UNIQUE
+#  tasks_context_idx             (context) USING gin
+#  tasks_context_idx1            (context) USING gin
+#  tasks_identity_hash_index     (identity_hash)
+#  tasks_named_task_id_index     (named_task_id)
+#  tasks_requested_at_index      (requested_at)
+#  tasks_source_system_index     (source_system)
+#  tasks_status_index            (status)
+#  tasks_tags_idx                (tags) USING gin
+#  tasks_tags_idx1               (tags) USING gin
 #
 # Foreign Keys
 #
