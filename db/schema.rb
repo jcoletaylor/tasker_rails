@@ -19,6 +19,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
   create_table 'annotation_types', primary_key: 'annotation_type_id', id: :serial, force: :cascade do |t|
     t.string 'name', limit: 64, null: false
     t.string 'description', limit: 255
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.index ['name'], name: 'annotation_types_name_index'
     t.index ['name'], name: 'annotation_types_name_unique', unique: true
   end
@@ -28,6 +30,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
     t.integer 'dependent_system_two_id', null: false
     t.string 'remote_id_one', limit: 128, null: false
     t.string 'remote_id_two', limit: 128, null: false
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.index %w[dependent_system_one_id dependent_system_two_id remote_id_one remote_id_two], name: 'dependent_system_object_maps_dependent_system_one_id_dependent_', unique: true
     t.index ['dependent_system_one_id'], name: 'dependent_system_object_maps_dependent_system_one_id_index'
     t.index ['dependent_system_two_id'], name: 'dependent_system_object_maps_dependent_system_two_id_index'
@@ -38,6 +42,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
   create_table 'dependent_systems', primary_key: 'dependent_system_id', id: :serial, force: :cascade do |t|
     t.string 'name', limit: 64, null: false
     t.string 'description', limit: 255
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.index ['name'], name: 'dependent_systems_name_index'
     t.index ['name'], name: 'dependent_systems_name_unique', unique: true
   end
@@ -46,6 +52,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
     t.integer 'dependent_system_id', null: false
     t.string 'name', limit: 128, null: false
     t.string 'description', limit: 255
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.index %w[dependent_system_id name], name: 'named_step_by_system_uniq', unique: true
     t.index ['dependent_system_id'], name: 'named_steps_dependent_system_id_index'
     t.index ['name'], name: 'named_steps_name_index'
@@ -54,6 +62,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
   create_table 'named_tasks', primary_key: 'named_task_id', id: :serial, force: :cascade do |t|
     t.string 'name', limit: 64, null: false
     t.string 'description', limit: 255
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.index ['name'], name: 'named_tasks_name_index'
     t.index ['name'], name: 'named_tasks_name_unique', unique: true
   end
@@ -64,6 +74,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
     t.boolean 'skippable', default: false, null: false
     t.boolean 'default_retryable', default: true, null: false
     t.integer 'default_retry_limit', default: 3, null: false
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.index ['named_step_id'], name: 'named_tasks_named_steps_named_step_id_index'
     t.index %w[named_task_id named_step_id], name: 'named_tasks_steps_ids_unique', unique: true
     t.index ['named_task_id'], name: 'named_tasks_named_steps_named_task_id_index'
@@ -73,6 +85,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
     t.bigint 'task_id', null: false
     t.integer 'annotation_type_id', null: false
     t.jsonb 'annotation'
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.index ['annotation'], name: 'task_annotations_annotation_idx', using: :gin
     t.index ['annotation'], name: 'task_annotations_annotation_idx1', opclass: :jsonb_path_ops, using: :gin
     t.index ['annotation_type_id'], name: 'task_annotations_annotation_type_id_index'
@@ -91,6 +105,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
     t.jsonb 'tags'
     t.jsonb 'context'
     t.string 'identity_hash', limit: 128, null: false
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.index ['context'], name: 'tasks_context_idx', using: :gin
     t.index ['context'], name: 'tasks_context_idx1', opclass: :jsonb_path_ops, using: :gin
     t.index ['identity_hash'], name: 'index_tasks_on_identity_hash', unique: true
@@ -118,6 +134,8 @@ ActiveRecord::Schema.define(version: 20_210_913_132_203) do
     t.integer 'backoff_request_seconds'
     t.jsonb 'inputs'
     t.jsonb 'results'
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.boolean 'skippable', default: false, null: false
     t.index ['depends_on_step_id'], name: 'workflow_steps_depends_on_step_id_index'
     t.index ['last_attempted_at'], name: 'workflow_steps_last_attempted_at_index'

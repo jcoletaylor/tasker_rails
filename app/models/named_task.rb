@@ -7,6 +7,8 @@
 #
 #  description   :string(255)
 #  name          :string(64)       not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #  named_task_id :integer          not null, primary key
 #
 # Indexes

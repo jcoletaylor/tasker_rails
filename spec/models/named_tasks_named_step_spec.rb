@@ -9,6 +9,8 @@
 #  default_retry_limit :integer          default(3), not null
 #  default_retryable   :boolean          default(TRUE), not null
 #  skippable           :boolean          default(FALSE), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
 #  named_step_id       :integer          not null
 #  named_task_id       :integer          not null
 #

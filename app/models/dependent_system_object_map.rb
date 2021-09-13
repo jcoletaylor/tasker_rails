@@ -7,6 +7,8 @@
 #
 #  remote_id_one                  :string(128)      not null
 #  remote_id_two                  :string(128)      not null
+#  created_at                     :datetime         not null
+#  updated_at                     :datetime         not null
 #  dependent_system_object_map_id :bigint           not null, primary key
 #  dependent_system_one_id        :integer          not null
 #  dependent_system_two_id        :integer          not null
