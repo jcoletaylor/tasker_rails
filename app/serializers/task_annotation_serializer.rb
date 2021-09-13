@@ -6,6 +6,8 @@
 # Table name: task_annotations
 #
 #  annotation         :jsonb
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
 #  annotation_type_id :integer          not null
 #  task_annotation_id :bigint           not null, primary key
 #  task_id            :bigint           not null

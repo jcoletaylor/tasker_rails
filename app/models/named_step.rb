@@ -7,6 +7,8 @@
 #
 #  description         :string(255)
 #  name                :string(128)      not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
 #  dependent_system_id :integer          not null
 #  named_step_id       :integer          not null, primary key
 #
