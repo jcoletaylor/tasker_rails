@@ -25,9 +25,12 @@ class TasksController < ApplicationController
 
   # POST /tasks
   def create
+    return render status: :bad_request, json: { error: 'invalid parameters: requires task name' } if task_params[:name].blank?
+
+    task_request = TaskRequest.new(task_params)
     begin
-      handler = handler_factory.get(task_params[:name])
-      @task = handler.initialize_task!(TaskRequest.new(task_params))
+      handler = handler_factory.get(task_request.name)
+      @task = handler.initialize_task!(task_request)
     rescue TaskHandlers::ProceduralError => e
       @task = Task.new
       @task.errors.add(:name, e.to_s)
@@ -38,7 +41,7 @@ class TasksController < ApplicationController
     if @task.errors.empty?
       render json: @task, status: :created, adapter: :json
     else
-      render status: :unprocessable_entity, json: { error: @task.errors }
+      render status: :bad_request, json: { error: @task.errors }
     end
   end
 
@@ -59,7 +62,6 @@ class TasksController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_task
     @task = Task.find(params[:id])
   end
@@ -68,13 +70,12 @@ class TasksController < ApplicationController
     @task = query_base.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through.
   def task_params
-    params.require(:task).permit(:name, :initiator, :source_system, :reason, :tags, context: {})
+    params.require(:task).permit(:name, :initiator, :source_system, :reason, tags: [], context: {})
   end
 
   def update_task_params
-    params.require(:task).permit(:reason, :tags)
+    params.require(:task).permit(:reason, tags: [])
   end
 
   def set_page_sort_params

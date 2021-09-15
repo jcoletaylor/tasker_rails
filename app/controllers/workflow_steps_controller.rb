@@ -56,7 +56,7 @@ class WorkflowStepsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def workflow_step_params
-    params.require(:workflow_step).permit(:retry_limit, :inputs)
+    params.require(:workflow_step).permit(:retry_limit, inputs: {})
   end
 
   def set_page_sort_params

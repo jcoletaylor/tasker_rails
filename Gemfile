@@ -34,6 +34,9 @@ gem 'sorbet-runtime'
 
 gem 'json-schema', '>= 2.4.0'
 
+gem 'rswag-api'
+gem 'rswag-ui'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
@@ -44,6 +47,7 @@ group :development, :test do
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-performance', require: false
+  gem 'rswag-specs'
 end
 
 group :development do
