@@ -10,9 +10,7 @@ module Types
     field :remote_id_two, String, null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
-    field :dependent_system_one, [Types::DependentSystemType], null: true
-    field :dependent_system_two, [Types::DependentSystemType], null: true
-    field :remote_id_one, String, null: true
-    field :remote_id_two, String, null: true
+    field :dependent_system_one, Types::DependentSystemType, null: true
+    field :dependent_system_two, Types::DependentSystemType, null: true
   end
 end

@@ -9,8 +9,8 @@ module Types
     field :annotation, GraphQL::Types::JSON, null: true
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
-    field :task, [Types::TaskType], null: true
-    field :annotation_type, [Types::AnnotationType], null: true
+    field :task, Types::TaskType, null: true
+    field :annotation_type, Types::AnnotationType, null: true
     field :annotation, GraphQL::Types::JSON, null: true
   end
 end

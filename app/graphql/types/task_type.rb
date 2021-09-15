@@ -3,6 +3,7 @@
 
 module Types
   class TaskType < Types::BaseObject
+    extend T::Sig
     field :task_id, ID, null: false
     field :named_task_id, Integer, null: false
     field :status, String, null: false
@@ -13,20 +14,16 @@ module Types
     field :reason, String, null: true
     field :bypass_steps, GraphQL::Types::JSON, null: true
     field :tags, GraphQL::Types::JSON, null: true
-    field :context, GraphQL::Types::JSON, null: true
+    field :context, GraphQL::Types::JSON, null: true, resolver_method: :resolve_context
     field :identity_hash, String, null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
-    field :named_task, [Types::NamedTaskType], null: true
-    field :status, String, null: true
-    field :complete, Boolean, null: true
-    field :requested_at, GraphQL::Types::ISO8601DateTime, null: true
-    field :initiator, String, null: true
-    field :source_system, String, null: true
-    field :reason, String, null: true
-    field :bypass_steps, GraphQL::Types::JSON, null: true
-    field :tags, GraphQL::Types::JSON, null: true
-    field :context, GraphQL::Types::JSON, null: true
-    field :identity_hash, String, null: true
+    field :named_task, Types::NamedTaskType, null: true
+    field :workflow_steps, [Types::WorkflowStepType], null: false
+
+    sig { returns(Symbol) }
+    def resolve_context
+      :context
+    end
   end
 end

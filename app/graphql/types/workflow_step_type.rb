@@ -21,20 +21,8 @@ module Types
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
     field :skippable, Boolean, null: false
-    field :task, [Types::TaskType], null: true
+    field :task, Types::TaskType, null: true
     field :named_step, [Types::NamedStepType], null: true
     field :depends_on_step, [Types::WorkflowStepType], null: true
-    field :status, String, null: true
-    field :retryable, Boolean, null: true
-    field :retry_limit, Integer, null: true
-    field :in_process, Boolean, null: true
-    field :processed, Boolean, null: true
-    field :processed_at, GraphQL::Types::ISO8601DateTime, null: true
-    field :skippable, Boolean, null: true
-    field :attempts, Integer, null: true
-    field :last_attempted_at, GraphQL::Types::ISO8601DateTime, null: true
-    field :backoff_request_seconds, Integer, null: true
-    field :inputs, GraphQL::Types::JSON, null: true
-    field :results, GraphQL::Types::JSON, null: true
   end
 end
