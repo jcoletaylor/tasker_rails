@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/bootsnap/all/bootsnap.rbi
 #
-# bootsnap-1.7.7
+# bootsnap-1.8.1
 
 module Bootsnap
   def bundler?; end

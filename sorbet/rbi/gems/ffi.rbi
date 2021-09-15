@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/ffi/all/ffi.rbi
 #
-# ffi-1.15.3
+# ffi-1.15.4
 
 class FFI::Type
   def alignment; end
@@ -557,11 +557,4 @@ class FFI::Bitmask < FFI::Enum
   def from_native(val, ctx); end
   def initialize(*args); end
   def to_native(query, ctx); end
-end
-module INotify
-end
-module INotify::Native
-  extend FFI::Library
-end
-class INotify::Native::Event < FFI::Struct
 end

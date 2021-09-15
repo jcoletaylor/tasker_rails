@@ -7,10 +7,12 @@ module Mail::CheckDeliveryParams; end
 module Mail::Ruby19; end
 module PG::TextDecoder::TimestampLocal; end
 module PG::TypeMap::DefaultTypeMappable; end
+module Rack::Auth::Basic; end
 module Rack::QueryParser::InvalidParameterError; end
 module Rack::QueryParser::ParameterTypeError; end
 module Rack::QueryParser::Params; end
 module Rack::Request::Env; end
 module Rack::Response::Helpers; end
+module Rack::Static; end
 module T::Private::Methods::MethodHooks; end
 module T::Private::Methods::SingletonMethodHooks; end

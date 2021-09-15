@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/activemodel/all/activemodel.rbi
 #
-# activemodel-6.1.4
+# activemodel-6.1.4.1
 
 module ActiveModel
   def self.eager_load!; end
@@ -326,6 +326,12 @@ end
 module ActiveModel::AttributeMethods::AttrNames
   def self.define_attribute_accessor_method(owner, attr_name, writer: nil); end
 end
+class ActiveModel::ForbiddenAttributesError < StandardError
+end
+module ActiveModel::ForbiddenAttributesProtection
+  def sanitize_for_mass_assignment(attributes); end
+  def sanitize_forbidden_attributes(attributes); end
+end
 module ActiveModel::SecurePassword
   def self.min_cost; end
   def self.min_cost=(arg0); end
@@ -580,12 +586,6 @@ class ActiveModel::Type::Registration
   def initialize(name, block, **arg2); end
   def matches?(type_name, *args, **kwargs); end
   def name; end
-end
-class ActiveModel::ForbiddenAttributesError < StandardError
-end
-module ActiveModel::ForbiddenAttributesProtection
-  def sanitize_for_mass_assignment(attributes); end
-  def sanitize_forbidden_attributes(attributes); end
 end
 module ActiveModel::AttributeAssignment
   def _assign_attribute(k, v); end
