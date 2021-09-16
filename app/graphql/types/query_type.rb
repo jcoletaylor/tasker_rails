@@ -10,10 +10,10 @@ module Types
 
     field :tasks, [Types::TaskType], null: true do
       description 'Find and sort tasks'
-      argument :limit, Integer, required: false
-      argument :offset, Integer, required: false
-      argument :sort_by, String, required: false
-      argument :sort_order, String, required: false
+      argument :limit, Integer, default_value: 20, prepare: ->(limit, _ctx) { [limit, 100].min }, required: false
+      argument :offset, Integer, default_value: 0, required: false
+      argument :sort_by, String, default_value: :requested_at, required: false
+      argument :sort_order, String, default_value: :desc, required: false
     end
 
     def tasks(limit:, offset:, sort_by:, sort_order:)
@@ -23,11 +23,11 @@ module Types
 
     field :tasks_by_status, [Types::TaskType], null: true do
       description 'Find and sort tasks by status'
-      argument :limit, Integer, required: false
-      argument :offset, Integer, required: false
-      argument :sort_by, String, required: false
-      argument :sort_order, String, required: false
       argument :status, String, required: true
+      argument :limit, Integer, default_value: 20, prepare: ->(limit, _ctx) { [limit, 100].min }, required: false
+      argument :offset, Integer, default_value: 0, required: false
+      argument :sort_by, String, default_value: :requested_at, required: false
+      argument :sort_order, String, default_value: :desc, required: false
     end
 
     def tasks_by_status(status:, limit:, offset:, sort_by:, sort_order:)
@@ -52,12 +52,12 @@ module Types
           .includes(task_annotations: %i[annotation_type])
     end
 
-    def page_sort_params(model, limit = 20, offset = 0, sort_by = :created_at, sort_order = :asc)
+    def page_sort_params(model, limit, offset, sort_by, sort_order)
       valid_sorts = model.column_names.map(&:to_sym)
       sort_by = :created_at unless valid_sorts.include?(sort_by)
       sort_order = :asc unless %i[asc desc].include?(sort_order)
       order = { sort_by => sort_order }
-      { limit: limit, offset: offset, order: order }
+      { limit: (limit || 20).to_i, offset: (offset || 0).to_i, order: order }
     end
   end
 end
