@@ -238,6 +238,48 @@ module Rack::Request::Helpers
   def wrap_ipv6(host); end
   def xhr?; end
 end
+module Rack::Mime
+  def match?(value, matcher); end
+  def mime_type(ext, fallback = nil); end
+  def self.match?(value, matcher); end
+  def self.mime_type(ext, fallback = nil); end
+end
+class Rack::Static
+  def add_index_root?(path); end
+  def applicable_rules(path); end
+  def call(env); end
+  def can_serve(path); end
+  def initialize(app, options = nil); end
+  def overwrite_file_path(path); end
+  def route_file(path); end
+end
+class Rack::Auth::AbstractHandler
+  def bad_request; end
+  def initialize(app, realm = nil, &authenticator); end
+  def realm; end
+  def realm=(arg0); end
+  def unauthorized(www_authenticate = nil); end
+end
+class Rack::Auth::AbstractRequest
+  def authorization_key; end
+  def initialize(env); end
+  def params; end
+  def parts; end
+  def provided?; end
+  def request; end
+  def scheme; end
+  def valid?; end
+end
+class Rack::Auth::Basic < Rack::Auth::AbstractHandler
+  def call(env); end
+  def challenge; end
+  def valid?(auth); end
+end
+class Rack::Auth::Basic::Request < Rack::Auth::AbstractRequest
+  def basic?; end
+  def credentials; end
+  def username; end
+end
 class Rack::Runtime
   def call(env); end
   def initialize(app, name = nil); end
@@ -249,31 +291,34 @@ class Rack::BodyProxy
   def method_missing(method_name, *args, &block); end
   def respond_to_missing?(method_name, include_all = nil); end
 end
-class Rack::Sendfile
+class Rack::Directory
   def call(env); end
-  def initialize(app, variation = nil, mappings = nil); end
-  def map_accel_path(env, path); end
-  def variation(env); end
+  def check_bad_request(path_info); end
+  def check_forbidden(path_info); end
+  def entity_not_found(path_info); end
+  def filesize_format(int); end
+  def get(env); end
+  def initialize(root, app = nil); end
+  def list_directory(path_info, path, script_name); end
+  def list_path(env, path, path_info, script_name); end
+  def root; end
+  def stat(path); end
 end
-class Rack::Head
-  def call(env); end
-  def initialize(app); end
+class Anonymous_Struct_7 < Struct
+  def files; end
+  def files=(_); end
+  def path; end
+  def path=(_); end
+  def root; end
+  def root=(_); end
+  def self.[](*arg0); end
+  def self.inspect; end
+  def self.members; end
+  def self.new(*arg0); end
 end
-class Rack::ConditionalGet
-  def call(env); end
-  def etag_matches?(none_match, headers); end
-  def fresh?(env, headers); end
-  def initialize(app); end
-  def modified_since?(modified_since, headers); end
-  def to_rfc2822(since); end
-end
-class Rack::ETag
-  def call(env); end
-  def digest_body(body); end
-  def etag_body?(body); end
-  def etag_status?(status); end
-  def initialize(app, no_cache_control = nil, cache_control = nil); end
-  def skip_caching?(headers); end
+class Rack::Directory::DirectoryBody < Anonymous_Struct_7
+  def DIR_FILE_escape(htmls); end
+  def each; end
 end
 class Rack::Files
   def call(env); end
@@ -300,6 +345,32 @@ class Rack::Files::BaseIterator
 end
 class Rack::Files::Iterator < Rack::Files::BaseIterator
   def to_path; end
+end
+class Rack::Head
+  def call(env); end
+  def initialize(app); end
+end
+class Rack::Sendfile
+  def call(env); end
+  def initialize(app, variation = nil, mappings = nil); end
+  def map_accel_path(env, path); end
+  def variation(env); end
+end
+class Rack::ConditionalGet
+  def call(env); end
+  def etag_matches?(none_match, headers); end
+  def fresh?(env, headers); end
+  def initialize(app); end
+  def modified_since?(modified_since, headers); end
+  def to_rfc2822(since); end
+end
+class Rack::ETag
+  def call(env); end
+  def digest_body(body); end
+  def etag_body?(body); end
+  def etag_status?(status); end
+  def initialize(app, no_cache_control = nil, cache_control = nil); end
+  def skip_caching?(headers); end
 end
 class Rack::Response
   def [](key); end
@@ -590,35 +661,6 @@ class Rack::Deflater::GzipStream
   def initialize(body, mtime, sync); end
   def write(data); end
 end
-class Rack::Directory
-  def call(env); end
-  def check_bad_request(path_info); end
-  def check_forbidden(path_info); end
-  def entity_not_found(path_info); end
-  def filesize_format(int); end
-  def get(env); end
-  def initialize(root, app = nil); end
-  def list_directory(path_info, path, script_name); end
-  def list_path(env, path, path_info, script_name); end
-  def root; end
-  def stat(path); end
-end
-class Anonymous_Struct_7 < Struct
-  def files; end
-  def files=(_); end
-  def path; end
-  def path=(_); end
-  def root; end
-  def root=(_); end
-  def self.[](*arg0); end
-  def self.inspect; end
-  def self.members; end
-  def self.new(*arg0); end
-end
-class Rack::Directory::DirectoryBody < Anonymous_Struct_7
-  def DIR_FILE_escape(htmls); end
-  def each; end
-end
 class Rack::ForwardRequest < Exception
   def env; end
   def initialize(url, env = nil); end
@@ -711,12 +753,6 @@ class Rack::MethodOverride
   def initialize(app); end
   def method_override(env); end
   def method_override_param(req); end
-end
-module Rack::Mime
-  def match?(value, matcher); end
-  def mime_type(ext, fallback = nil); end
-  def self.match?(value, matcher); end
-  def self.mime_type(ext, fallback = nil); end
 end
 class Rack::NullLogger
   def <<(msg); end
@@ -812,15 +848,6 @@ class Rack::ShowStatus
   def h(obj); end
   def initialize(app); end
 end
-class Rack::Static
-  def add_index_root?(path); end
-  def applicable_rules(path); end
-  def call(env); end
-  def can_serve(path); end
-  def initialize(app, options = nil); end
-  def overwrite_file_path(path); end
-  def route_file(path); end
-end
 class Rack::TempfileReaper
   def call(env); end
   def initialize(app); end
@@ -906,33 +933,6 @@ end
 class Rack::Multipart::Parser::Collector::TempfilePart < Rack::Multipart::Parser::Collector::MimePart
   def close; end
   def file?; end
-end
-class Rack::Auth::AbstractHandler
-  def bad_request; end
-  def initialize(app, realm = nil, &authenticator); end
-  def realm; end
-  def realm=(arg0); end
-  def unauthorized(www_authenticate = nil); end
-end
-class Rack::Auth::AbstractRequest
-  def authorization_key; end
-  def initialize(env); end
-  def params; end
-  def parts; end
-  def provided?; end
-  def request; end
-  def scheme; end
-  def valid?; end
-end
-class Rack::Auth::Basic < Rack::Auth::AbstractHandler
-  def call(env); end
-  def challenge; end
-  def valid?(auth); end
-end
-class Rack::Auth::Basic::Request < Rack::Auth::AbstractRequest
-  def basic?; end
-  def credentials; end
-  def username; end
 end
 class Rack::Auth::Digest::Params < Hash
   def [](k); end

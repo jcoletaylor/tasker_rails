@@ -11,3 +11,8 @@
 
 module INotify
 end
+module INotify::Native
+  extend FFI::Library
+end
+class INotify::Native::Event < FFI::Struct
+end

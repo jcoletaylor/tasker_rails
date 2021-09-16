@@ -1,7 +1,8 @@
-# typed: strict
+# typed: ignore
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  post '/graphql', to: 'graphql#execute'
   mount Rswag::Ui::Engine => '/api-docs'
   mount Rswag::Api::Engine => '/api-docs'
   resources :tasks do
