@@ -20,6 +20,7 @@ module Types
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
     field :named_task, Types::NamedTaskType, null: true
     field :workflow_steps, [Types::WorkflowStepType], null: false
+    field :task_annotations, [Types::TaskAnnotationType], null: false
 
     sig { returns(Symbol) }
     def resolve_context

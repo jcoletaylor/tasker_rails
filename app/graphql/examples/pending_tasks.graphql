@@ -11,6 +11,13 @@ query PendingTasks($limit: Int, $offset: Int, $sort_by: String, $sort_order: Str
     workflowSteps {
       workflowStepId,
       status
+    },
+    taskAnnotations {
+      taskAnnotationId,
+      annotationType {
+        name
+      },
+      annotation
     }
   }
 }

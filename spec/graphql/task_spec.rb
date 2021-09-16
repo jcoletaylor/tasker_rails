@@ -17,7 +17,16 @@ RSpec.describe 'graphql tasks', type: :request do
     json = JSON.parse(response.body).deep_symbolize_keys
     task_data = json[:data][:tasks]
     expect(task_data.length.positive?).to be_truthy
-    expect(task_data.pluck(:taskId).map(&:to_i)).to include(@task.task_id)
+    task_data.each do |task|
+      expect(task[:status]).not_to be_nil
+      task[:workflowSteps].each do |step|
+        expect(step[:status]).not_to be_nil
+      end
+      task[:taskAnnotations].each do |annotation|
+        expect(annotation[:annotationType][:name]).not_to be_nil
+        expect(annotation[:annotation]).not_to be_nil
+      end
+    end
   end
 
   it 'should get pending tasks' do
@@ -25,9 +34,15 @@ RSpec.describe 'graphql tasks', type: :request do
     json = JSON.parse(response.body).deep_symbolize_keys
     task_data = json[:data][:tasksByStatus]
     expect(task_data.length.positive?).to be_truthy
-    expect(task_data.pluck(:taskId).map(&:to_i)).to include(@task.task_id)
     task_data.each do |task|
       expect(task[:status]).to eq('pending')
+      task[:workflowSteps].each do |step|
+        expect(step[:status]).not_to be_nil
+      end
+      task[:taskAnnotations].each do |annotation|
+        expect(annotation[:annotationType][:name]).not_to be_nil
+        expect(annotation[:annotation]).not_to be_nil
+      end
     end
   end
 
@@ -45,6 +60,13 @@ RSpec.describe 'graphql tasks', type: :request do
           workflowSteps {
             workflowStepId,
             status
+          },
+          taskAnnotations {
+            taskAnnotationId,
+            annotationType {
+              name
+            },
+            annotation
           }
         }
       }
@@ -66,6 +88,13 @@ RSpec.describe 'graphql tasks', type: :request do
           workflowSteps {
             workflowStepId,
             status
+          },
+          taskAnnotations {
+            taskAnnotationId,
+            annotationType {
+              name
+            },
+            annotation
           }
         }
       }
