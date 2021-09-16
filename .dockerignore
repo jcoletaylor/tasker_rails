@@ -1,0 +1,22 @@
+
+# Logs
+log/*
+
+# Temp files
+tmp/*
+
+# Editor temp files
+*.swp
+*.swo
+node_modules
+npm-debug.log
+Dockerfile*
+docker-compose*
+.dockerignore
+.git
+.gitignore
+.env
+
+README.md
+LICENSE
+.vscode
