@@ -41,7 +41,10 @@ Building a TaskHandler looks something like this:
 require 'dummy_rust_task_handler'
 
 class DummyTask
+  # including this is the most important piece
   include TaskHandlers::HandlerCommon
+  
+  # these are just for ease of use, they could just be strings below
   DUMMY_SYSTEM = 'dummy-system'
   STEP_ONE = 'step-one'
   STEP_TWO = 'step-two'
@@ -50,12 +53,17 @@ class DummyTask
   ANNOTATION_TYPE = 'dummy-annotation'
   TASK_REGISTRY_NAME = 'dummy_task'
 
+  # regular ruby handler class, could be any class that implements
+  # a `handle` function with the method signature as below
   class Handler
     def handle(_task, _sequence, step)
       step.results = { dummy: true }
     end
   end
 
+  # a class to abstract handling inputs to a dylib/so library built in rust
+  # inputs can come from the step or the task - any structure
+  # that is serializable to JSON
   class RustyHandler
     def handle(_task, _sequence, step)
       rusty_results = DummyRustTaskHandler::Handler.handle(step.inputs)
@@ -86,14 +94,13 @@ class DummyTask
 
   # note below how different steps can have a depends_on_step
   def register_step_templates
-    three_times = 3
     self.step_templates = [
       StepTemplate.new(
         dependent_system: DUMMY_SYSTEM,
         name: STEP_ONE,
         description: 'Independent Step One',
         default_retryable: true,
-        default_retry_limit: three_times,
+        default_retry_limit: 3,
         skippable: false,
         handler_class: DummyTask::Handler
       ),
@@ -102,7 +109,7 @@ class DummyTask
         name: STEP_TWO,
         description: 'Independent Step Two',
         default_retryable: true,
-        default_retry_limit: three_times,
+        default_retry_limit: 3,
         skippable: false,
         handler_class: DummyTask::Handler
       ),
@@ -112,7 +119,7 @@ class DummyTask
         depends_on_step: STEP_TWO,
         description: 'Step Three Dependent on Step Two',
         default_retryable: true,
-        default_retry_limit: three_times,
+        default_retry_limit: 3,
         skippable: false,
         handler_class: DummyTask::Handler
       ),
@@ -122,7 +129,7 @@ class DummyTask
         depends_on_step: STEP_THREE,
         description: 'Step Four Dependent on Step Three using a Gem wrapping a Rust FFI',
         default_retryable: true,
-        default_retry_limit: three_times,
+        default_retry_limit: 3,
         skippable: false,
         handler_class: DummyTask::RustyHandler
       )
@@ -193,13 +200,15 @@ pub extern "C" fn handle(inputs: *const c_char) -> *const c_char {
 
 * Ruby version - 2.7.3
 
-* System dependencies - Redis and Sidekiq
+* System dependencies - Postgres, Redis, and Sidekiq
 
 * Database - `bundle exec rake db:schema:load`
 
 * How to run the test suite - `bundle exec rspec spec`
 
-* Services - Sidekiq
+* Lint: `bundle exec rake lint`
+
+* Typecheck with Sorbet: `bundle exec srb tc`
 
 ## Rust and Ruby-FFI
 
