@@ -32,6 +32,8 @@ I'll be honest that I *love* [Rust](https://www.rust-lang.org/) 🦀 - I have bu
 
 So, when it came to working on this project, I wanted to find a way to at least make it possible to use Rust for building worker logic, but expose it to the Rails' Task Handler that interacts with Sidekiq. I had originally wanted to [Use Helix](https://usehelix.com/) but sadly the project has been deprecated. So, having some familiarity with Ruby-FFI from other work, I decided I would make my own local gem and wrap up the Rust library. [This post](https://dev.to/kojix2/making-rubygem-with-rust-2ji6) is actually one of the best and most straightforward examples of how to do this, so I won't duplicate the information here.
 
+*EDIT* I also took the opportunity to try out [Rutie](https://github.com/danielpclark/rutie) and [Rutie Serde](https://github.com/deliveroo/rutie-serde), and this has proven to be a fairly exciting - it is possible to build Rust structs that conform to the attributes of Ruby objects, which makes the ergonomics of using Rust methods in a Ruby application really beautiful.
+
 ## How to use Tasker
 
 It would probably be good at some point for me to just turn Tasker into a gem itself and let it be included in other Rails apps. But, for now, for anyone who wants to make use of the project, it is easy enough to just clone and start with it as a template.
@@ -41,6 +43,9 @@ Building a TaskHandler looks something like this:
 ```ruby
 # loaded only in test, our very cool Rust library made available via Ruby FFI
 require 'dummy_rust_task_handler'
+
+# loaded only in test, our very cool Rust library made available via Rutie and Rutie Serde
+require 'rutie_task_handler'
 
 class DummyTask
   # including this is the most important piece
@@ -70,6 +75,16 @@ class DummyTask
     def handle(_task, _sequence, step)
       rusty_results = DummyRustTaskHandler::Handler.handle(step.inputs)
       step.results = rusty_results
+    end
+  end
+
+  # a class to abstract handling inputs to a dylib/so library built in rust / rutie
+  # the handle input is the WorkflowStep, and an output is a ruby hash with the same structure
+  # as the attributes of a WorkflowStep
+  class RutieHandler
+    def handle(_task, _sequence, step)
+      rutie_step = DummyRutieTaskHandler.handle(step)
+      step.results = rutie_step[:results].symbolize_keys
     end
   end
 
@@ -119,11 +134,11 @@ class DummyTask
         dependent_system: DUMMY_SYSTEM,
         name: STEP_THREE,
         depends_on_step: STEP_TWO,
-        description: 'Step Three Dependent on Step Two',
+        description: 'Step Three Dependent on Step Two using a Gem wrapping a Rutie handler',
         default_retryable: true,
         default_retry_limit: 3,
         skippable: false,
-        handler_class: DummyTask::Handler
+        handler_class: DummyTask::RutieHandler
       ),
       StepTemplate.new(
         dependent_system: DUMMY_SYSTEM,
