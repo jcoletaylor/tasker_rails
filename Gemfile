@@ -67,6 +67,8 @@ group :test do
   gem 'rspec-sorbet'
   # FFI local
   gem 'dummy_rust_task_handler', '>= 0.1.0', path: './gems/dummy_rust_task_handler'
+  # Rutie local
+  gem 'rutie_task_handler', '>= 0.1.0', path: './gems/rutie_task_handler'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
