@@ -32,7 +32,7 @@ I'll be honest that I *love* [Rust](https://www.rust-lang.org/) 🦀 - I have bu
 
 So, when it came to working on this project, I wanted to find a way to at least make it possible to use Rust for building worker logic, but expose it to the Rails' Task Handler that interacts with Sidekiq. I had originally wanted to [Use Helix](https://usehelix.com/) but sadly the project has been deprecated. So, having some familiarity with Ruby-FFI from other work, I decided I would make my own local gem and wrap up the Rust library. [This post](https://dev.to/kojix2/making-rubygem-with-rust-2ji6) is actually one of the best and most straightforward examples of how to do this, so I won't duplicate the information here.
 
-*EDIT* I also took the opportunity to try out [Rutie](https://github.com/danielpclark/rutie) and [Rutie Serde](https://github.com/deliveroo/rutie-serde), and this has proven to be a fairly exciting - it is possible to build Rust structs that conform to the attributes of Ruby objects, which makes the ergonomics of using Rust methods in a Ruby application really beautiful.
+*UPDATE* I also took the opportunity to try out [Rutie](https://github.com/danielpclark/rutie) and [Rutie Serde](https://github.com/deliveroo/rutie-serde), and this has proven to be a fairly exciting - it is possible to build Rust structs that conform to the attributes of Ruby objects, which makes the ergonomics of using Rust methods in a Ruby application really beautiful. Take a look below for the differences in approach.
 
 ## How to use Tasker
 
@@ -213,9 +213,79 @@ pub extern "C" fn handle(inputs: *const c_char) -> *const c_char {
 }
 ```
 
+The code for Rutie is similar, but is worth seeing as an example of how much simpler it is to read and use.
+
+```ruby
+require 'rutie'
+
+module RutieTaskHandler
+  class Error < StandardError; end
+
+  Rutie.new(:rutie_task_handler, { lib_path: File.join(__dir__, '../lib/rutie_task_handler') }).init 'Init_rutie_task_handler', __dir__
+end
+```
+
+You can see how many fewer lines this is, and how much boilerplate is removed. Now for the Rust code:
+
+```rust
+#[macro_use]
+extern crate rutie;
+
+use rutie::{Class, Object};
+use rutie_serde::{rutie_serde_methods, ruby_class};
+use serde_json::{json};
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use serde_json::Value as JsonValue;
+
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub struct WorkflowStep {
+    pub workflow_step_id: i64,
+    pub task_id: i64,
+    pub named_step_id: i32,
+    pub depends_on_step_id: Option<i64>,
+    pub status: String,
+    pub retryable: bool,
+    pub retry_limit: Option<i32>,
+    pub in_process: bool,
+    pub processed: bool,
+    pub processed_at: Option<DateTime<Utc>>,
+    pub attempts: Option<i32>,
+    pub last_attempted_at: Option<DateTime<Utc>>,
+    pub backoff_request_seconds: Option<i32>,
+    pub inputs: Option<JsonValue>,
+    pub results: Option<JsonValue>,
+}
+
+class!(DummyRutieTaskHandler);
+
+rutie_serde_methods!(
+    DummyRutieTaskHandler,
+    _rtself,
+    ruby_class!(Exception),
+
+    fn pub_handle(step: WorkflowStep) -> WorkflowStep {
+        let mut new_step = step.clone();
+        new_step.results = Some(json!({ "dummy": true }));
+        new_step
+    }
+);
+
+#[allow(non_snake_case)]
+#[no_mangle]
+pub extern "C" fn Init_rutie_task_handler() {
+    Class::new("DummyRutieTaskHandler", None).define(|klass| {
+        klass.def_self("handle", pub_handle);
+    });
+}
+```
+
+We are able to receive and return Rust Structs (Ruby gets the response Struct back as a Hash). So long as the Ruby side sends an object that conforms to the shape of the Rust Struct, we can pass objects back and forth and it looks native. The magic here of course is the combination of `rutie` and `rutie_serde`, where `rutie_serde` removes a lot of boilerplate for us in terms of creating the correct objects to and from Rust by relying on `rutie_serde` to serialize and deserialize these objects. While passing JSON as we did in the Ruby-FFI example is in some ways very similar, the ergonomics of using the Rutie / Rutie Serde version in the Ruby calling code are superior and feels far more intuitive.
+
 ## Dependencies
 
-* Ruby version - 2.7.3
+* Ruby version - 2.7
 
 * System dependencies - Postgres, Redis, and Sidekiq
 
@@ -236,6 +306,28 @@ Check out the [gem](./gems/dummy_rust_task_handler). To rebuild the gem for test
 `cd gems/dummy_rust_task_handler; rake clean && rake build`
 
 Of course this assumes you have [Rust installed](https://www.rust-lang.org/tools/install).
+
+To target a linux `.so` file from Mac OS if you are planning to just store the `.so` or `.dylib` without a rebuild, you can use the work by [SergioBenitez](https://github.com/SergioBenitez/homebrew-osxct). For Ruby-FFI there was no difficulty in just doing the following:
+
+```bash
+brew tap SergioBenitez/osxct
+brew install x86_64-unknown-linux-gnu
+cargo build --release --target x86_64-unknown-linux-gnu
+```
+
+## Rust and Rutie
+
+A sample TaskHandler for a WorkflowStep has *also* been implemented in Rust using Rutie and Rutie Serde.
+
+Check out the [gem](./gems/rutie_task_handler). To rebuild the gem for test on your own system, do this:
+
+`cd gems/rutie_task_handler; rake clean && rake build`
+
+Again this assumes you have [Rust installed](https://www.rust-lang.org/tools/install).
+
+A note with Rutie - for Ruby-FFI above just targeting the `x86_64-unknown-linux-gnu` toolchain worked fine. With Rutie that did not work for me, because the linker could not find the ruby2.7 libraries in the `x86_64-unknown-linux-gnu` space. This problem is addressed [in Rutie's README](https://github.com/danielpclark/rutie#dynamic-vs-static-builds) but even following the documentation I couldn't get it to work.
+
+Rather than fighting with it too much, I just built a [Dockerfile](./gems/rutie_task_handler/helper/Dockerfile) that has Ruby, Rust, and the necessary build tools and libraries already present. Then it's just a matter of running the container interactively with the Rust source tree mapped to a volume mount path in the running container, and then running, as previously, `cargo build --release --target x86_64-unknown-linux-gnu`. See the [build.sh](./gems/rutie_task_handler/helper/build.sh) helper, though it's not really meant to be run direclty, just a set of reminders. You can then just copy the output `.so` file from the release target into the gem's [load path](./gems/rutie_task_handler/lib/rutie_task_handler).
 
 ## Gratitude
 
