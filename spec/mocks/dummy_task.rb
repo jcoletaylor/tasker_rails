@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'dummy_rust_task_handler'
+require 'rutie_task_handler'
 
 class DummyTask
   include TaskHandlers::HandlerCommon
@@ -10,6 +11,7 @@ class DummyTask
   STEP_TWO = 'step-two'
   STEP_THREE = 'step-three'
   STEP_FOUR = 'step-four'
+  STEP_FIVE = 'step-five'
   ANNOTATION_TYPE = 'dummy-annotation'
   TASK_REGISTRY_NAME = 'dummy_task'
 
@@ -23,6 +25,13 @@ class DummyTask
     def handle(_task, _sequence, step)
       rusty_results = DummyRustTaskHandler::Handler.handle(step.inputs)
       step.results = rusty_results
+    end
+  end
+
+  class RutieHandler
+    def handle(_task, _sequence, step)
+      rutie_step = DummyRutieTaskHandler.handle(step)
+      step.results = rutie_step[:results].symbolize_keys
     end
   end
 
@@ -71,11 +80,11 @@ class DummyTask
         dependent_system: DUMMY_SYSTEM,
         name: STEP_THREE,
         depends_on_step: STEP_TWO,
-        description: 'Step Three Dependent on Step Two',
+        description: 'Step Three Dependent on Step Two using a Gem wrapping a Rutie handler',
         default_retryable: true,
         default_retry_limit: 3,
         skippable: false,
-        handler_class: DummyTask::Handler
+        handler_class: DummyTask::RutieHandler
       ),
       StepTemplate.new(
         dependent_system: DUMMY_SYSTEM,

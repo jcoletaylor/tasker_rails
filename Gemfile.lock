@@ -5,6 +5,14 @@ PATH
       ffi
       json
 
+PATH
+  remote: gems/rutie_task_handler
+  specs:
+    rutie_task_handler (0.1.0)
+      ffi
+      json
+      rutie (~> 0.0.3)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -224,6 +232,7 @@ GEM
       rubocop (~> 1.0)
       rubocop-ast (>= 1.1.0)
     ruby-progressbar (1.11.0)
+    rutie (0.0.4)
     sidekiq (6.2.1)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
@@ -286,6 +295,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   rubocop-rspec
+  rutie_task_handler (>= 0.1.0)!
   sidekiq
   simplecov
   sorbet
