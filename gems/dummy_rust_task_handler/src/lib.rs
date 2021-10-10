@@ -1,8 +1,8 @@
 extern crate libc;
 
 use libc::c_char;
+use serde_json::{error::Error as JsonError, json, Value as JsonValue};
 use std::ffi::{CStr, CString};
-use serde_json::{json, Value as JsonValue, error::Error as JsonError};
 
 fn get_inputs(inputs: *const c_char) -> Result<JsonValue, JsonError> {
     let c_str = unsafe {

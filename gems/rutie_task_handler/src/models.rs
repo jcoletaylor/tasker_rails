@@ -39,5 +39,5 @@ pub struct WorkflowStep {
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct StepSequence {
-    pub steps: Vec<WorkflowStep>
+    pub steps: Vec<WorkflowStep>,
 }
