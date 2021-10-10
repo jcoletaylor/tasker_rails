@@ -29514,6 +29514,13 @@ module DummyRustTaskHandler::Wrapped
   def self.handle(*arg); end
 end
 
+class DummyRutieTaskHandler
+end
+
+class DummyRutieTaskHandler
+  def self.handle(*arg); end
+end
+
 class ERB
   def def_method(mod, methodname, fname=T.unsafe(nil)); end
 
@@ -29848,6 +29855,12 @@ class Etc::Passwd
   def self.members(); end
 end
 
+module Examples
+end
+
+module Examples
+end
+
 class Exception
   include ::ActiveSupport::Dependencies::Blamable
 end
@@ -30082,6 +30095,14 @@ end
 
 class Fiber
   def self.current(); end
+end
+
+module Fiddle
+  NULL = ::T.let(nil, ::T.untyped)
+  RTLD_GLOBAL = ::T.let(nil, ::T.untyped)
+  RTLD_LAZY = ::T.let(nil, ::T.untyped)
+  RTLD_NOW = ::T.let(nil, ::T.untyped)
+  WINDOWS = ::T.let(nil, ::T.untyped)
 end
 
 class File
@@ -45542,6 +45563,12 @@ class StepSequence
   def self.members(); end
 end
 
+class StepSequenceStruct
+  def self.[](*arg); end
+
+  def self.members(); end
+end
+
 class StepTemplate
   def self.[](*arg); end
 
@@ -45840,6 +45867,12 @@ end
 class TaskSerializer
 end
 
+class TaskStruct
+  def self.[](*arg); end
+
+  def self.members(); end
+end
+
 class Tempfile
   def _close(); end
 
@@ -46131,6 +46164,11 @@ class Types::TaskType::InvalidNullError
 end
 
 class Types::TaskType::InvalidNullError
+end
+
+class Types::TaskType
+  extend ::T::Private::Methods::MethodHooks
+  extend ::T::Private::Methods::SingletonMethodHooks
 end
 
 class Types::WorkflowStepType::InvalidNullError
@@ -46656,6 +46694,12 @@ module WorkflowStep::GeneratedAttributeMethods
 end
 
 class WorkflowStepSerializer
+end
+
+class WorkflowStepStruct
+  def self.[](*arg); end
+
+  def self.members(); end
 end
 
 module Zeitwerk::ExplicitNamespace

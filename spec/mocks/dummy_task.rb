@@ -29,9 +29,9 @@ class DummyTask
   end
 
   class RutieHandler
-    def handle(_task, _sequence, step)
-      rutie_step = DummyRutieTaskHandler.handle(step)
-      step.results = rutie_step[:results].symbolize_keys
+    def handle(task, sequence, step)
+      rutie_step = DummyRutieTaskHandler.handle(task, sequence, step)
+      step.results = rutie_step[:results]
     end
   end
 
