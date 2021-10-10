@@ -7,4 +7,5 @@ RUN apt-get update \
     && apt-get install -y curl \
     && apt-get install -y build-essential \
     && rm -rf /var/lib/apt/lists/*
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+WORKDIR /source
