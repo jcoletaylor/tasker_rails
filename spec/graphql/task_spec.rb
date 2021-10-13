@@ -5,12 +5,10 @@ require 'rails_helper'
 require_relative '../mocks/dummy_task'
 
 RSpec.describe 'graphql tasks', type: :request do
-  before(:all) do
-    @factory = TaskHandlers::HandlerFactory.instance
-    @handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
-    task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: true }, initiator: 'pete@test', reason: 'setup test', source_system: 'test')
-    @task = @handler.initialize_task!(task_request)
-  end
+  let(:factory) { TaskHandlers::HandlerFactory.instance }
+  let(:handler) { factory.get(DummyTask::TASK_REGISTRY_NAME) }
+  let(:task_request) { TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: true }, initiator: 'pete@test', reason: 'setup test', source_system: 'test') }
+  let(:task) { handler.initialize_task!(task_request) }
 
   it 'should get all tasks' do
     post '/graphql', params: { query: all_tasks_query }

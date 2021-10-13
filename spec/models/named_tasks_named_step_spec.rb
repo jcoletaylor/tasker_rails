@@ -26,23 +26,26 @@
 #  named_tasks_named_steps_named_task_id_foreign  (named_task_id => named_tasks.named_task_id)
 #
 require 'rails_helper'
+require_relative '../mocks/dummy_task'
 
 RSpec.describe NamedTasksNamedStep, type: :model do
   context 'class methods' do
+    let(:task_request) { TaskRequest.new(name: 'dummy_action', context: { some: :value, it_is: :great }) }
+    let(:task) { Task.create_with_defaults!(task_request) }
+    let(:template) do
+      StepTemplate.new(
+        dependent_system: 'dummy-system',
+        name: 'step-one',
+        description: 'Independent Step One',
+        default_retryable: true,
+        default_retry_limit: 3,
+        skippable: false,
+        handler_class: DummyTask::Handler
+      )
+    end
+    let(:named_steps) { NamedStep.create_named_steps_from_templates([template]) }
+
     it 'should be able to associate named tasks and named steps' do
-      task_request = TaskRequest.new(name: 'dummy_action', context: { some: :value, it_is: :great })
-      task = Task.create_with_defaults!(task_request)
-      template =
-        StepTemplate.new(
-          dependent_system: 'dummy-system',
-          name: 'step-one',
-          description: 'Independent Step One',
-          default_retryable: true,
-          default_retry_limit: 3,
-          skippable: false,
-          handler_class: DummyTask::Handler
-        )
-      named_steps = NamedStep.create_named_steps_from_templates([template])
       named_step = named_steps.first
       ntns = NamedTasksNamedStep.associate_named_step_with_named_task(task, template, named_step)
       expect(ntns.named_step).to eq(named_step)

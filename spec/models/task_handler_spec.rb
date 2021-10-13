@@ -6,19 +6,17 @@ require_relative '../mocks/dummy_task'
 
 RSpec.describe 'TaskHandlers', type: :model do
   describe 'DummyTask' do
-    before(:all) do
-      @factory = TaskHandlers::HandlerFactory.instance
-    end
+    let(:factory) { TaskHandlers::HandlerFactory.instance }
+    let(:task_handler) { factory.get(DummyTask::TASK_REGISTRY_NAME) }
+
     it 'should be able to initialize a dummy task and get the handler' do
-      task_handler = DummyTask.new
-      expect(task_handler.step_templates.first.handler_class).to eq(DummyTask::Handler)
+      generic_task_handler = DummyTask.new
+      expect(generic_task_handler.step_templates.first.handler_class).to eq(DummyTask::Handler)
     end
     it 'handler factory should be able to find the correct handler' do
-      task_handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
       expect(task_handler.step_templates.first.handler_class).to eq(DummyTask::Handler)
     end
     it 'should be able to initialize a task' do
-      task_handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
       task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: true })
       task = task_handler.initialize_task!(task_request)
       expect(task).to be_valid
@@ -27,14 +25,12 @@ RSpec.describe 'TaskHandlers', type: :model do
       expect(task.workflow_steps.count).to eq(4)
     end
     it 'should not be able to initialize a task if the context is invalid' do
-      task_handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
       task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { bad_param: true, dummy: 12 })
       task = task_handler.initialize_task!(task_request)
       # bad param and wrong type, two errors
       expect(task.errors[:context].length).to eq(2)
     end
     it 'should be able to initialize and handle a task' do
-      task_handler = @factory.get(DummyTask::TASK_REGISTRY_NAME)
       task_request = TaskRequest.new(name: DummyTask::TASK_REGISTRY_NAME, context: { dummy: true })
       task = task_handler.initialize_task!(task_request)
       task_handler.handle(task)
