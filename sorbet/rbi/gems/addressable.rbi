@@ -7,16 +7,14 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/addressable/all/addressable.rbi
 #
-# addressable-2.8.0
+# addressable-2.8.4
 
 module Addressable
 end
 module Addressable::VERSION
 end
 module Addressable::IDNA
-  def self.lookup_unicode_combining_class(codepoint); end
-  def self.lookup_unicode_compatibility(codepoint); end
-  def self.lookup_unicode_composition(unpacked); end
+  def self._deprecated_unicode_normalize_kc(value); end
   def self.lookup_unicode_lowercase(codepoint); end
   def self.punycode_adapt(delta, numpoints, firsttime); end
   def self.punycode_basic?(codepoint); end
@@ -27,14 +25,8 @@ module Addressable::IDNA
   def self.punycode_encode_digit(d); end
   def self.to_ascii(input); end
   def self.to_unicode(input); end
-  def self.ucs4_to_utf8(char, buffer); end
-  def self.unicode_compose(unpacked); end
-  def self.unicode_compose_pair(ch_one, ch_two); end
-  def self.unicode_decompose(unpacked); end
-  def self.unicode_decompose_hangul(codepoint); end
   def self.unicode_downcase(input); end
-  def self.unicode_normalize_kc(input); end
-  def self.unicode_sort_canonical(unpacked); end
+  def self.unicode_normalize_kc(*args, &block); end
 end
 class Addressable::IDNA::PunycodeBadInput < StandardError
 end
@@ -58,6 +50,7 @@ class Addressable::URI
   def empty?; end
   def eql?(uri); end
   def extname; end
+  def force_utf8_encoding_if_needed(str); end
   def fragment; end
   def fragment=(new_fragment); end
   def freeze; end
@@ -106,6 +99,7 @@ class Addressable::URI
   def replace_self(uri); end
   def request_uri; end
   def request_uri=(new_request_uri); end
+  def reset_ivs; end
   def route_from(uri); end
   def route_to(uri); end
   def scheme; end

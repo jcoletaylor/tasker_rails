@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rack-cors/all/rack-cors.rbi
 #
-# rack-cors-1.1.1
+# rack-cors-2.0.1
 
 module Rack
 end
@@ -25,39 +25,15 @@ class Rack::Cors
   def resource_for_path(path_info); end
   def select_logger(env); end
 end
-class Rack::Cors::Result
-  def append_header(headers); end
-  def hit; end
-  def hit=(arg0); end
-  def hit?; end
-  def miss(reason); end
-  def miss_reason; end
-  def miss_reason=(arg0); end
-  def preflight; end
-  def preflight=(arg0); end
-  def preflight?; end
-  def self.hit(env); end
-  def self.miss(env, reason); end
-  def self.preflight(env); end
-end
-class Rack::Cors::Resources
-  def allow_origin?(source, env = nil); end
-  def initialize; end
-  def match_resource(path, env); end
-  def origins(*args, &blk); end
-  def public_resources?; end
-  def resource(path, opts = nil); end
-  def resource_for_path(path); end
-  def resources; end
-end
 class Rack::Cors::Resource
   def allow_headers?(request_headers); end
   def compile(path); end
   def credentials; end
   def credentials=(arg0); end
-  def ensure_enum(v); end
+  def ensure_enum(var); end
   def expose; end
   def expose=(arg0); end
+  def header_proc; end
   def headers; end
   def headers=(arg0); end
   def if_proc; end
@@ -83,4 +59,29 @@ class Rack::Cors::Resource
 end
 class Rack::Cors::Resource::CorsMisconfigurationError < StandardError
   def message; end
+end
+class Rack::Cors::Resources
+  def allow_origin?(source, env = nil); end
+  def initialize; end
+  def match_resource(path, env); end
+  def origins(*args, &blk); end
+  def public_resources?; end
+  def resource(path, opts = nil); end
+  def resource_for_path(path); end
+  def resources; end
+end
+class Rack::Cors::Result
+  def append_header(headers); end
+  def hit; end
+  def hit=(arg0); end
+  def hit?; end
+  def miss(reason); end
+  def miss_reason; end
+  def miss_reason=(arg0); end
+  def preflight; end
+  def preflight=(arg0); end
+  def preflight?; end
+  def self.hit(env); end
+  def self.miss(env, reason); end
+  def self.preflight(env); end
 end

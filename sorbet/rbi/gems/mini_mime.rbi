@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/mini_mime/all/mini_mime.rbi
 #
-# mini_mime-1.1.1
+# mini_mime-1.1.2
 
 module MiniMime
   def self.lookup_by_content_type(mime); end

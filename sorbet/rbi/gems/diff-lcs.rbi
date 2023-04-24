@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/diff-lcs/all/diff-lcs.rbi
 #
-# diff-lcs-1.4.4
+# diff-lcs-1.5.0
 
 class Diff::LCS::Change
   def <=>(other); end

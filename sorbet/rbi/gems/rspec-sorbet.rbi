@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rspec-sorbet/all/rspec-sorbet.rbi
 #
-# rspec-sorbet-1.8.0
+# rspec-sorbet-1.9.2
 
 module RSpec
 end
@@ -15,11 +15,23 @@ module RSpec::Sorbet
   extend RSpec::Sorbet::Doubles
 end
 module RSpec::Sorbet::Doubles
-  def allow_doubles!; end
-  def allow_instance_doubles!; end
-  def call_validation_error_handler(_signature, opts); end
-  def double_message_with_ellipsis?(message); end
-  def inline_type_error_handler(error); end
-  def typed_array_message?(message); end
-  def unable_to_check_type_for_message?(message); end
+  def allow_doubles!(*args, &blk); end
+  def allow_instance_doubles!(*args, &blk); end
+  def call_validation_error_handler(*args, &blk); end
+  def configured(*args, &blk); end
+  def configured=(arg0); end
+  def double_message_with_ellipsis?(*args, &blk); end
+  def existing_call_validation_error_handler(*args, &blk); end
+  def existing_call_validation_error_handler=(arg0); end
+  def existing_inline_type_error_handler(*args, &blk); end
+  def existing_inline_type_error_handler=(arg0); end
+  def handle_call_validation_error(*args, &blk); end
+  def inline_type_error_handler(*args, &blk); end
+  def reset!(*args, &blk); end
+  def typed_array_message?(*args, &blk); end
+  def unable_to_check_type_for_message?(*args, &blk); end
+  extend T::Helpers
+  extend T::Private::Methods::MethodHooks
+  extend T::Private::Methods::SingletonMethodHooks
+  extend T::Sig
 end

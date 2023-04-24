@@ -5,7 +5,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/edit/master/lib/activerecord/all/activerecord.rbi
 #
-# typed: strong
+# typed: false
 
 VariadicUntypedFunction = T.type_alias { Proc }
 AssociationCallback = T.type_alias do
@@ -921,7 +921,7 @@ module ActiveRecord::Persistence::ClassMethods
     params(
       attributes: T::Array[T::Hash[T.any(Symbol, String), T.untyped]],
       returning: T.nilable(T.any(FalseClass, T::Array[T.any(Symbol, String)])),
-      unique_by: T.nilable(T.untyped)
+      unique_by: T.untyped
     ).returns(ActiveRecord::Result)
   end
   def insert_all(attributes, returning: nil, unique_by: nil); end
@@ -930,7 +930,7 @@ module ActiveRecord::Persistence::ClassMethods
     params(
       attributes: T::Hash[T.any(Symbol, String), T.untyped],
       returning: T.nilable(T.any(FalseClass, T::Array[T.any(Symbol, String)])),
-      unique_by: T.nilable(T.untyped)
+      unique_by: T.untyped
     ).returns(ActiveRecord::Result)
   end
   def insert!(attributes, returning: nil, unique_by: nil); end
@@ -939,7 +939,7 @@ module ActiveRecord::Persistence::ClassMethods
     params(
       attributes: T::Hash[T.any(Symbol, String), T.untyped],
       returning: T.nilable(T.any(FalseClass, T::Array[T.any(Symbol, String)])),
-      unique_by: T.nilable(T.untyped)
+      unique_by: T.untyped
     ).returns(ActiveRecord::Result)
   end
   def insert(attributes, returning: nil, unique_by: nil); end
@@ -963,7 +963,7 @@ module ActiveRecord::Persistence::ClassMethods
     params(
       attributes: T::Array[T::Hash[T.any(Symbol, String), T.untyped]],
       returning: T.nilable(T.any(FalseClass, T::Array[T.any(Symbol, String)])),
-      unique_by: T.nilable(T.untyped)
+      unique_by: T.untyped
     ).returns(ActiveRecord::Result)
   end
   def upsert_all(attributes, returning: nil, unique_by: nil); end
@@ -972,7 +972,7 @@ module ActiveRecord::Persistence::ClassMethods
     params(
       attributes: T::Hash[T.any(Symbol, String), T.untyped],
       returning: T.nilable(T.any(FalseClass, T::Array[T.any(Symbol, String)])),
-      unique_by: T.nilable(T.untyped)
+      unique_by: T.untyped
     ).returns(ActiveRecord::Result)
   end
   def upsert(attributes, returning: nil, unique_by: nil); end
@@ -980,7 +980,7 @@ end
 
 class ActiveRecord::Result
   include(::Enumerable)
-  Elem = type_member(fixed: T.untyped)
+  Elem = type_member {{fixed: T.untyped}}
 end
 
 ActiveRecord::Type::BigInteger = ActiveModel::Type::BigInteger
@@ -1611,7 +1611,7 @@ end
 ActiveRecord::LogSubscriber::IGNORE_PAYLOAD_NAMES = T.let(T.unsafe(nil), T::Array[T.untyped])
 
 class ActiveRecord::Relation
-  Elem = type_member(fixed: T.untyped)
+  Elem = type_member {{fixed: T.untyped}}
 
   sig { returns(Integer) }
   def delete_all; end

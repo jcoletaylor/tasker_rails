@@ -75,7 +75,7 @@ Sidekiq::DEFAULTS = T.let(T.unsafe(nil), T::Hash[T.untyped, T.untyped])
 Sidekiq::DEFAULT_WORKER_OPTIONS = T.let(T.unsafe(nil), T::Hash[T.untyped, T.untyped])
 
 class Sidekiq::DeadSet < ::Sidekiq::JobSet
-  Elem = type_member(fixed: Sidekiq::SortedEntry)
+  Elem = type_member {{fixed: Sidekiq::SortedEntry}}
 
   def initialize; end
 
@@ -233,7 +233,7 @@ class Sidekiq::JobRetry::Skip < ::Sidekiq::JobRetry::Handled
 end
 
 class Sidekiq::JobSet < ::Sidekiq::SortedSet
-  Elem = type_member(fixed: Sidekiq::SortedEntry)
+  Elem = type_member {{fixed: Sidekiq::SortedEntry}}
 
   def delete(score, jid); end
   def delete_by_jid(score, jid); end
@@ -282,7 +282,7 @@ end
 
 class Sidekiq::Middleware::Chain
   include(::Enumerable)
-  Elem = type_member(fixed: T.untyped)
+  Elem = type_member {{fixed: T.untyped}}
 
   def initialize; end
 
@@ -332,7 +332,7 @@ end
 class Sidekiq::ProcessSet
   include(::Enumerable)
   include(::Sidekiq::RedisScanner)
-  Elem = type_member(fixed: Sidekiq::Process)
+  Elem = type_member {{fixed: Sidekiq::Process}}
 
   def initialize(clean_plz = T.unsafe(nil)); end
 
@@ -345,7 +345,7 @@ end
 class Sidekiq::Queue
   include(::Enumerable)
   extend(::Sidekiq::RedisScanner)
-  Elem = type_member(fixed: Sidekiq::Job)
+  Elem = type_member {{fixed: Sidekiq::Job}}
 
   def initialize(name = T.unsafe(nil)); end
 
@@ -407,7 +407,7 @@ module Sidekiq::RedisScanner
 end
 
 class Sidekiq::RetrySet < ::Sidekiq::JobSet
-  Elem = type_member(fixed: Sidekiq::SortedEntry)
+  Elem = type_member {{fixed: Sidekiq::SortedEntry}}
 
   def initialize; end
 
@@ -447,7 +447,7 @@ Sidekiq::Scheduled::Poller::INITIAL_WAIT = T.let(T.unsafe(nil), Integer)
 Sidekiq::Scheduled::SETS = T.let(T.unsafe(nil), T::Array[T.untyped])
 
 class Sidekiq::ScheduledSet < ::Sidekiq::JobSet
-  Elem = type_member(fixed: Sidekiq::SortedEntry)
+  Elem = type_member {{fixed: Sidekiq::SortedEntry}}
 
   def initialize; end
 end
@@ -475,7 +475,7 @@ end
 
 class Sidekiq::SortedSet
   include(::Enumerable)
-  Elem = type_member(fixed: Sidekiq::SortedEntry)
+  Elem = type_member {{fixed: Sidekiq::SortedEntry}}
 
   def initialize(name); end
 
@@ -598,7 +598,7 @@ module Sidekiq::Worker::ClassMethods
       unique_for: T.nilable(ActiveSupport::Duration),
       unique_until: T.nilable(Symbol),
       options: T.untyped
-    ).void
+    ).returns(T::Hash[String, T.untyped])
   end
   def sidekiq_options(queue: nil, retry: nil, backtrace: nil, pool: nil, unique_for: nil, unique_until: nil, **options); end
 
@@ -633,7 +633,7 @@ end
 class Sidekiq::Workers
   include(::Enumerable)
   include(::Sidekiq::RedisScanner)
-  Elem = type_member(fixed: T.untyped)
+  Elem = type_member {{fixed: T.untyped}}
 
   def each; end
   def size; end

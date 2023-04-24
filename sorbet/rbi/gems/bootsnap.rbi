@@ -7,20 +7,22 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/bootsnap/all/bootsnap.rbi
 #
-# bootsnap-1.8.1
+# bootsnap-1.16.0
 
 module Bootsnap
   def bundler?; end
   def instrumentation_enabled=(arg0); end
   def self._instrument(event, path); end
+  def self.absolute_path?(path); end
   def self.default_setup; end
   def self.instrumentation=(callback); end
   def self.instrumentation_enabled=(arg0); end
-  def self.iseq_cache_supported?; end
   def self.log!; end
   def self.logger; end
   def self.logger=(logger); end
-  def self.setup(cache_dir:, development_mode: nil, load_path_cache: nil, autoload_paths_cache: nil, disable_trace: nil, compile_cache_iseq: nil, compile_cache_yaml: nil); end
+  def self.rb_get_path(arg0); end
+  def self.setup(cache_dir:, development_mode: nil, load_path_cache: nil, ignore_directories: nil, readonly: nil, compile_cache_iseq: nil, compile_cache_yaml: nil, compile_cache_json: nil); end
+  def self.unload_cache!; end
   extend Bootsnap
 end
 module Bootsnap::ExplicitRequire
@@ -30,21 +32,24 @@ module Bootsnap::ExplicitRequire
   def self.with_gems(*gems); end
 end
 module Bootsnap::LoadPathCache
+  def self.enabled?; end
   def self.load_path_cache; end
   def self.loaded_features_index; end
-  def self.realpath_cache; end
-  def self.setup(cache_path:, development_mode:); end
+  def self.setup(cache_path:, development_mode:, ignore_directories:, readonly: nil); end
   def self.supported?; end
+  def self.unload!; end
 end
 module Bootsnap::LoadPathCache::PathScanner
   def self.call(path); end
+  def self.ignored_directories; end
+  def self.ignored_directories=(arg0); end
   def self.os_path(path); end
   def self.walk(absolute_dir_path, relative_dir_path, &block); end
 end
 class Bootsnap::LoadPathCache::Path
   def entries_and_dirs(store); end
   def expanded_path; end
-  def initialize(path); end
+  def initialize(path, real: nil); end
   def latest_mtime(path, dirs); end
   def non_directory?; end
   def path; end
@@ -52,34 +57,37 @@ class Bootsnap::LoadPathCache::Path
   def scan!; end
   def stability; end
   def stable?; end
+  def to_realpath; end
   def volatile?; end
 end
 class Bootsnap::LoadPathCache::Cache
-  def absolute_path?(path); end
   def dir_changed?; end
   def expand_path(feature); end
   def find(feature); end
   def initialize(store, path_obj, development_mode: nil); end
   def load_dir(dir); end
-  def maybe_append_extension(f); end
+  def maybe_append_extension(feature); end
   def now; end
   def push_paths(sender, *paths); end
   def push_paths_locked(*paths); end
   def reinitialize(path_obj = nil); end
-  def search_index(f); end
+  def search_index(feature); end
   def stale?; end
-  def try_ext(f); end
-  def try_index(f); end
+  def try_ext(feature); end
+  def try_index(feature); end
   def unshift_paths(sender, *paths); end
   def unshift_paths_locked(*paths); end
 end
 class Bootsnap::LoadPathCache::Store
   def commit_transaction; end
+  def default_data; end
   def dump_data; end
   def fetch(key); end
   def get(key); end
-  def initialize(store_path); end
+  def initialize(store_path, readonly: nil); end
   def load_data; end
+  def mark_for_mutation!; end
+  def mkdir_p(path); end
   def set(key, value); end
   def transaction; end
 end
@@ -88,7 +96,8 @@ end
 class Bootsnap::LoadPathCache::Store::SetOutsideTransactionNotAllowed < StandardError
 end
 module Bootsnap::LoadPathCache::ChangeObserver
-  def self.register(observer, arr); end
+  def self.register(arr, observer); end
+  def self.unregister(arr); end
 end
 module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
   def <<(entry); end
@@ -123,27 +132,19 @@ module Bootsnap::LoadPathCache::ChangeObserver::ArrayMixin
   def unshift(*entries); end
 end
 class Bootsnap::LoadPathCache::LoadedFeaturesIndex
-  def extension_elidable?(f); end
+  def cursor(short); end
+  def extension_elidable?(feature); end
+  def identify(short, cursor); end
   def initialize; end
   def key?(feature); end
   def purge(feature); end
   def purge_multi(features); end
-  def register(short, long = nil); end
-  def strip_extension_if_elidable(f); end
-end
-class Bootsnap::LoadPathCache::RealpathCache
-  def call(*key); end
-  def find_file(name); end
-  def initialize; end
-  def realpath(caller_location, path); end
-end
-class Bootsnap::LoadPathCache::ReturnFalse < StandardError
-end
-class Bootsnap::LoadPathCache::FallbackScan < StandardError
+  def register(short, long); end
+  def strip_extension_if_elidable(feature); end
 end
 module Bootsnap::CompileCache
   def self.permission_error(path); end
-  def self.setup(cache_dir:, iseq:, yaml:); end
+  def self.setup(cache_dir:, iseq:, yaml:, json:, readonly: nil); end
   def self.supported?; end
 end
 class Bootsnap::CompileCache::Error < StandardError
@@ -152,38 +153,30 @@ class Bootsnap::CompileCache::PermissionError < Bootsnap::CompileCache::Error
 end
 class Bootsnap::InvalidConfiguration < StandardError
 end
-module Bootsnap::LoadPathCache::CoreExt
-  def self.make_load_error(path); end
-end
 module Kernel
-  def load_without_bootsnap(*arg0); end
-  def require_relative_without_bootsnap(arg0); end
-  def require_with_bootsnap_lfi(path, resolved = nil); end
   def require_without_bootsnap(arg0); end
-  def self.require_with_bootsnap_lfi(path, resolved = nil); end
-end
-class Module
-  def autoload_without_bootsnap(arg0, arg1); end
 end
 module Bootsnap::CompileCache::Native
   def compile_option_crc32=(arg0); end
   def coverage_running?; end
   def fetch(arg0, arg1, arg2, arg3); end
   def precompile(arg0, arg1, arg2); end
+  def readonly=(arg0); end
   def self.compile_option_crc32=(arg0); end
   def self.coverage_running?; end
   def self.fetch(arg0, arg1, arg2, arg3); end
   def self.precompile(arg0, arg1, arg2); end
+  def self.readonly=(arg0); end
 end
 module Bootsnap::CompileCache::ISeq
   def self.cache_dir; end
-  def self.cache_dir=(arg0); end
+  def self.cache_dir=(cache_dir); end
   def self.compile_option_updated; end
   def self.fetch(path, cache_dir: nil); end
   def self.input_to_output(_data, _kwargs); end
   def self.input_to_storage(_, path); end
   def self.install!(cache_dir); end
-  def self.precompile(path, cache_dir: nil); end
+  def self.precompile(path); end
   def self.storage_to_output(binary, _args); end
 end
 module Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
@@ -192,20 +185,74 @@ module Bootsnap::CompileCache::ISeq::InstructionSequenceMixin
 end
 module Bootsnap::CompileCache::YAML
   def self.cache_dir; end
-  def self.cache_dir=(arg0); end
+  def self.cache_dir=(cache_dir); end
+  def self.implementation; end
   def self.init!; end
-  def self.input_to_output(data, kwargs); end
-  def self.input_to_storage(contents, _); end
   def self.install!(cache_dir); end
   def self.msgpack_factory; end
   def self.msgpack_factory=(arg0); end
-  def self.precompile(path, cache_dir: nil); end
-  def self.storage_to_output(data, kwargs); end
-  def self.strict_load(payload, *args); end
-  def self.strict_visitor; end
+  def self.patch; end
+  def self.precompile(path); end
+  def self.strict_load(payload); end
+  def self.supported_internal_encoding?; end
   def self.supported_options; end
   def self.supported_options=(arg0); end
 end
-module Bootsnap::CompileCache::YAML::Patch
+class Bootsnap::CompileCache::YAML::Uncompilable < StandardError
+end
+class Bootsnap::CompileCache::YAML::UnsupportedTags < Bootsnap::CompileCache::YAML::Uncompilable
+end
+module InvalidName___Class_0x00___EncodingAwareSymbols_10
+  def unpack(payload); end
+  extend InvalidName___Class_0x00___EncodingAwareSymbols_10
+end
+module Bootsnap::CompileCache::YAML::Psych4
+  def input_to_storage(contents, _); end
+  extend Bootsnap::CompileCache::YAML::Psych4
+end
+module Bootsnap::CompileCache::YAML::Psych4::UnsafeLoad
+  def input_to_output(data, kwargs); end
+  def input_to_storage(contents, _); end
+  def storage_to_output(data, kwargs); end
+  extend Bootsnap::CompileCache::YAML::Psych4::UnsafeLoad
+end
+module Bootsnap::CompileCache::YAML::Psych4::SafeLoad
+  def input_to_output(data, kwargs); end
+  def input_to_storage(contents, _); end
+  def storage_to_output(data, kwargs); end
+  extend Bootsnap::CompileCache::YAML::Psych4::SafeLoad
+end
+module Bootsnap::CompileCache::YAML::Psych4::Patch
   def load_file(path, *args); end
+  def unsafe_load_file(path, *args); end
+end
+module Bootsnap::CompileCache::YAML::Psych3
+  def input_to_output(data, kwargs); end
+  def input_to_storage(contents, _); end
+  def storage_to_output(data, kwargs); end
+  extend Bootsnap::CompileCache::YAML::Psych3
+end
+module Bootsnap::CompileCache::YAML::Psych3::Patch
+  def load_file(path, *args); end
+end
+module Bootsnap::CompileCache::JSON
+  def self.cache_dir; end
+  def self.cache_dir=(cache_dir); end
+  def self.init!; end
+  def self.input_to_output(data, kwargs); end
+  def self.input_to_storage(payload, _); end
+  def self.install!(cache_dir); end
+  def self.msgpack_factory; end
+  def self.msgpack_factory=(arg0); end
+  def self.precompile(path); end
+  def self.storage_to_output(data, kwargs); end
+  def self.supported_options; end
+  def self.supported_options=(arg0); end
+  def self.supports_freeze?; end
+end
+module Bootsnap::CompileCache::JSON::Patch
+  def load_file(path, *args); end
+end
+class Bootsnap::CompileCache::YAML::NoTagsVisitor < Psych::Visitors::NoAliasRuby
+  def visit(target); end
 end

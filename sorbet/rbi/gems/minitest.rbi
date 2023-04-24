@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/minitest/all/minitest.rbi
 #
-# minitest-5.14.4
+# minitest-5.18.0
 
 module Minitest
   def self.__run(reporter, options); end
@@ -15,6 +15,7 @@ module Minitest
   def self.autorun; end
   def self.backtrace_filter; end
   def self.backtrace_filter=(arg0); end
+  def self.cattr_accessor(name); end
   def self.clock_time; end
   def self.extensions; end
   def self.extensions=(arg0); end
@@ -30,6 +31,8 @@ module Minitest
   def self.reporter=(arg0); end
   def self.run(args = nil); end
   def self.run_one_method(klass, method_name); end
+  def self.seed; end
+  def self.seed=(arg0); end
 end
 module Minitest::Parallel
 end
@@ -62,6 +65,7 @@ module Minitest::Assertions
   def assert_operator(o1, op, o2 = nil, msg = nil); end
   def assert_output(stdout = nil, stderr = nil); end
   def assert_path_exists(path, msg = nil); end
+  def assert_pattern; end
   def assert_predicate(o1, op, msg = nil); end
   def assert_raises(*exp); end
   def assert_respond_to(obj, meth, msg = nil); end
@@ -91,6 +95,7 @@ module Minitest::Assertions
   def refute_nil(obj, msg = nil); end
   def refute_operator(o1, op, o2 = nil, msg = nil); end
   def refute_path_exists(path, msg = nil); end
+  def refute_pattern; end
   def refute_predicate(o1, op, msg = nil); end
   def refute_respond_to(obj, meth, msg = nil); end
   def refute_same(exp, act, msg = nil); end
@@ -111,7 +116,10 @@ end
 class Minitest::Test < Minitest::Runnable
   def capture_exceptions; end
   def class_name; end
+  def neuter_exception(e); end
+  def new_exception(klass, msg, bt, kill = nil); end
   def run; end
+  def sanitize_exception(e); end
   def self.i_suck_and_my_tests_are_order_dependent!; end
   def self.io_lock; end
   def self.io_lock=(arg0); end
@@ -229,7 +237,6 @@ class Minitest::StatisticsReporter < Minitest::Reporter
 end
 class Minitest::SummaryReporter < Minitest::StatisticsReporter
   def aggregated_results(io); end
-  def binary_string; end
   def old_sync; end
   def old_sync=(arg0); end
   def report; end

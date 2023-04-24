@@ -5,7 +5,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/edit/master/lib/minitest/all/minitest.rbi
 #
-# typed: strong
+# typed: false
 
 module Minitest
   class Runnable

@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rswag-api/all/rswag-api.rbi
 #
-# rswag-api-2.4.0
+# rswag-api-2.8.0
 
 module Rswag
 end

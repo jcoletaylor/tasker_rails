@@ -7,13 +7,22 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/i18n/all/i18n.rbi
 #
-# i18n-1.8.10
+# i18n-1.12.0
 
 module I18n
   def self.interpolate(string, values); end
   def self.interpolate_hash(string, values); end
   def self.new_double_nested_cache; end
+  def self.reserve_key(key); end
+  def self.reserved_keys_pattern; end
   extend I18n::Base
+end
+module I18n::Utils
+  def self.deep_merge!(hash, other_hash, &block); end
+  def self.deep_merge(hash, other_hash, &block); end
+  def self.deep_symbolize_keys(hash); end
+  def self.deep_symbolize_keys_in_object(value); end
+  def self.except(hash, *keys); end
 end
 class I18n::ExceptionHandler
   def call(exception, _locale, _key, _options); end
@@ -69,6 +78,15 @@ class I18n::UnknownFileType < I18n::ArgumentError
   def initialize(type, filename); end
   def type; end
 end
+class I18n::UnsupportedMethod < I18n::ArgumentError
+  def backend_klass; end
+  def initialize(method, backend_klass, msg); end
+  def method; end
+  def msg; end
+end
+class I18n::InvalidFilenames < I18n::ArgumentError
+  def initialize(file_errors); end
+end
 module I18n::Base
   def available_locales; end
   def available_locales=(value); end
@@ -103,6 +121,7 @@ module I18n::Base
   def t(key = nil, throw: nil, raise: nil, locale: nil, **options); end
   def translate!(key, **options); end
   def translate(key = nil, throw: nil, raise: nil, locale: nil, **options); end
+  def translate_key(key, throw, raise, locale, backend, options); end
   def transliterate(key, throw: nil, raise: nil, locale: nil, replacement: nil, **options); end
   def with_locale(tmp_locale = nil); end
 end
@@ -132,8 +151,6 @@ class I18n::Config
   def missing_interpolation_argument_handler=(exception_handler); end
 end
 module I18n::Backend
-end
-module I18n::HashRefinements
 end
 module I18n::Backend::Transliterator
   def self.get(rule = nil); end
@@ -170,6 +187,7 @@ module I18n::Backend::Base
   def pluralize(locale, entry, count); end
   def reload!; end
   def resolve(locale, object, subject, options = nil); end
+  def resolve_entry(locale, object, subject, options = nil); end
   def store_translations(locale, data, options = nil); end
   def subtrees?; end
   def translate(locale, key, options = nil); end

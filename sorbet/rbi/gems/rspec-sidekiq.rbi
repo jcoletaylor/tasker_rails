@@ -26,9 +26,9 @@ class RSpec::Sidekiq::Configuration
 end
 module Sidekiq
 end
-module Sidekiq::Worker
+module Sidekiq::Job
 end
-module Sidekiq::Worker::ClassMethods
+module Sidekiq::Job::ClassMethods
   def default_retries_exhausted_exception; end
   def default_retries_exhausted_message; end
   def within_sidekiq_retries_exhausted_block(user_msg = nil, exception = nil, &block); end

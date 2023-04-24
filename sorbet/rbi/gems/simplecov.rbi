@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/simplecov/all/simplecov.rbi
 #
-# simplecov-0.21.2
+# simplecov-0.22.0
 
 module SimpleCov
   def self.adapt_coverage_result; end
@@ -77,9 +77,12 @@ module SimpleCov::Configuration
   def coverage_criterion(criterion = nil); end
   def coverage_criterion_enabled?(criterion); end
   def coverage_dir(dir = nil); end
+  def coverage_for_eval_enabled?; end
+  def coverage_for_eval_supported?; end
   def coverage_path; end
   def coverage_start_arguments_supported?; end
   def enable_coverage(criterion); end
+  def enable_coverage_for_eval; end
   def enable_for_subprocesses(value = nil); end
   def enabled_for_subprocesses?; end
   def filters; end

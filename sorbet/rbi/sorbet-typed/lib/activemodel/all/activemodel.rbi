@@ -5,7 +5,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/edit/master/lib/activemodel/all/activemodel.rbi
 #
-# typed: strong
+# typed: false
 
 module ActiveModel::AttributeMethods
   mixes_in_class_methods(::ActiveModel::AttributeMethods::ClassMethods)
@@ -568,7 +568,7 @@ ActiveModel::Validations::NumericalityValidator::RESERVED_OPTIONS = T.let(T.unsa
 
 class ActiveModel::Errors
   include Enumerable
-  Elem = type_member(fixed: T.untyped)
+  Elem = type_member {{fixed: T.untyped}}
 
   sig { params(key: T.any(String, Symbol)).returns(T::Array[String]) }
   def [](key); end

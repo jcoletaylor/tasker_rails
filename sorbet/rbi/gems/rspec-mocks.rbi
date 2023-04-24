@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rspec-mocks/all/rspec-mocks.rbi
 #
-# rspec-mocks-3.10.2
+# rspec-mocks-3.12.5
 
 module RSpec
 end
@@ -305,7 +305,7 @@ module RSpec::Mocks::TestDoubleFormatter
   def self.verified_module_desc(dbl); end
 end
 class RSpec::Mocks::ArgumentListMatcher
-  def args_match?(*args); end
+  def args_match?(*actual_args); end
   def ensure_expected_args_valid!; end
   def expected_args; end
   def initialize(*expected_args); end
@@ -322,6 +322,7 @@ class RSpec::Mocks::SimpleMessageExpectation
 end
 class RSpec::Mocks::MessageExpectation
   def and_call_original; end
+  def and_invoke(first_proc, *procs); end
   def and_raise(*args); end
   def and_return(first_value, *values); end
   def and_throw(*args); end
@@ -402,6 +403,10 @@ end
 class RSpec::Mocks::AndReturnImplementation
   def call(*_args_to_ignore, &_block); end
   def initialize(values_to_return); end
+end
+class RSpec::Mocks::AndInvokeImplementation
+  def call(*args, &block); end
+  def initialize(procs_to_invoke); end
 end
 class RSpec::Mocks::Implementation
   def actions; end
@@ -730,6 +735,7 @@ class RSpec::Mocks::ObjectMethodReference < RSpec::Mocks::MethodReference
 end
 class RSpec::Mocks::ClassNewMethodReference < RSpec::Mocks::ObjectMethodReference
   def self.applies_to?(method_name); end
+  def self.uses_class_new?(klass); end
   def with_signature; end
 end
 class RSpec::Mocks::CallbackInvocationStrategy
@@ -784,10 +790,6 @@ module RSpec::Mocks::VerifyingDouble
   def method_missing(message, *args, &block); end
   def respond_to?(message, include_private = nil); end
   def send(name, *args, &block); end
-end
-module RSpec::Mocks::VerifyingDouble::SilentIO
-  def self.method_missing(*arg0); end
-  def self.respond_to?(*arg0); end
 end
 class RSpec::Mocks::InstanceVerifyingDouble
   def __build_mock_proxy(order_group); end
@@ -941,7 +943,7 @@ class RSpec::Mocks::AnyInstance::Proxy
   def stub_chain(*chain, &block); end
   def unstub(method_name); end
 end
-class RSpec::Mocks::AnyInstance::FluentInterfaceProxy
+class RSpec::Mocks::AnyInstance::FluentInterfaceProxy < BasicObject
   def initialize(targets); end
   def method_missing(*args, &block); end
   def respond_to_missing?(method_name, include_private = nil); end
@@ -985,9 +987,9 @@ class RSpec::Mocks::Matchers::HaveReceived
   def failure_message; end
   def failure_message_when_negated; end
   def initialize(method_name, &block); end
+  def matcher_name; end
   def matches?(subject, &block); end
   def mock_proxy; end
-  def name; end
   def notify_failure_message; end
   def once(*args); end
   def ordered(*args); end
@@ -1012,6 +1014,7 @@ class RSpec::Mocks::Matchers::ExpectationCustomization
 end
 class RSpec::Mocks::Matchers::Receive
   def and_call_original(*args, &block); end
+  def and_invoke(*args, &block); end
   def and_raise(*args, &block); end
   def and_return(*args, &block); end
   def and_throw(*args, &block); end
@@ -1024,9 +1027,10 @@ class RSpec::Mocks::Matchers::Receive
   def does_not_match?(subject, &block); end
   def exactly(*args, &block); end
   def initialize(message, block); end
+  def inspect(*args, &block); end
+  def matcher_name; end
   def matches?(subject, &block); end
   def move_block_to_last_customization(block); end
-  def name; end
   def never(*args, &block); end
   def once(*args, &block); end
   def ordered(*args, &block); end
@@ -1042,6 +1046,7 @@ class RSpec::Mocks::Matchers::Receive
   def thrice(*args, &block); end
   def time(*args, &block); end
   def times(*args, &block); end
+  def to_s(*args, &block); end
   def twice(*args, &block); end
   def warn_if_any_instance(expression, subject); end
   def with(*args, &block); end
@@ -1053,6 +1058,7 @@ class RSpec::Mocks::Matchers::Receive::DefaultDescribable
 end
 class RSpec::Mocks::Matchers::ReceiveMessageChain
   def and_call_original(*args, &block); end
+  def and_invoke(*args, &block); end
   def and_raise(*args, &block); end
   def and_return(*args, &block); end
   def and_throw(*args, &block); end
@@ -1061,8 +1067,8 @@ class RSpec::Mocks::Matchers::ReceiveMessageChain
   def does_not_match?(*_args); end
   def formatted_chain; end
   def initialize(chain, &block); end
+  def matcher_name; end
   def matches?(subject, &block); end
-  def name; end
   def replay_customizations(chain); end
   def setup_allowance(subject, &block); end
   def setup_any_instance_allowance(subject, &block); end
@@ -1078,8 +1084,8 @@ class RSpec::Mocks::Matchers::ReceiveMessages
   def does_not_match?(_subject); end
   def each_message_on(host); end
   def initialize(message_return_value_hash); end
+  def matcher_name; end
   def matches?(subject); end
-  def name; end
   def proxy_on(subject); end
   def setup_allowance(subject); end
   def setup_any_instance_allowance(subject); end

@@ -16,28 +16,28 @@ module Types
       argument :sort_order, String, default_value: :desc, required: false
     end
 
-    def tasks(limit:, offset:, sort_by:, sort_order:)
-      sorts = page_sort_params(Task, limit, offset, sort_by, sort_order)
-      task_query_base.limit(sorts[:limit]).offset(sorts[:offset]).order(sorts[:order])
-    end
-
     field :tasks_by_status, [Types::TaskType], null: true do
       description 'Find and sort tasks by status'
-      argument :status, String, required: true
       argument :limit, Integer, default_value: 20, prepare: ->(limit, _ctx) { [limit, 100].min }, required: false
       argument :offset, Integer, default_value: 0, required: false
       argument :sort_by, String, default_value: :requested_at, required: false
       argument :sort_order, String, default_value: :desc, required: false
-    end
-
-    def tasks_by_status(status:, limit:, offset:, sort_by:, sort_order:)
-      sorts = page_sort_params(Task, limit, offset, sort_by, sort_order)
-      task_query_base.where(status: status).limit(sorts[:limit]).offset(sorts[:offset]).order(sorts[:order])
+      argument :status, String, required: true
     end
 
     field :task, Types::TaskType, null: true do
       description 'Find a task by ID'
       argument :task_id, ID, required: true
+    end
+
+    def tasks(limit:, offset:, sort_by:, sort_order:)
+      sorts = page_sort_params(Task, limit, offset, sort_by, sort_order)
+      task_query_base.limit(sorts[:limit]).offset(sorts[:offset]).order(sorts[:order])
+    end
+
+    def tasks_by_status(status:, limit:, offset:, sort_by:, sort_order:)
+      sorts = page_sort_params(Task, limit, offset, sort_by, sort_order)
+      task_query_base.where(status: status).limit(sorts[:limit]).offset(sorts[:offset]).order(sorts[:order])
     end
 
     def task(task_id:)

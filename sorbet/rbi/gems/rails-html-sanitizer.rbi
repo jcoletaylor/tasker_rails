@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rails-html-sanitizer/all/rails-html-sanitizer.rbi
 #
-# rails-html-sanitizer-1.4.2
+# rails-html-sanitizer-1.5.0
 
 module Rails
 end
@@ -26,8 +26,9 @@ class Rails::Html::PermitScrubber < Loofah::Scrubber
   def allowed_node?(node); end
   def attributes; end
   def attributes=(attributes); end
-  def initialize; end
+  def initialize(prune: nil); end
   def keep_node?(node); end
+  def prune; end
   def scrub(node); end
   def scrub_attribute(node, attr_node); end
   def scrub_attribute?(name); end
@@ -57,7 +58,7 @@ end
 class Rails::Html::SafeListSanitizer < Rails::Html::Sanitizer
   def allowed_attributes(options); end
   def allowed_tags(options); end
-  def initialize; end
+  def initialize(prune: nil); end
   def sanitize(html, options = nil); end
   def sanitize_css(style_string); end
   def self.allowed_attributes; end

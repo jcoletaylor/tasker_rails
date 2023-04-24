@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/dotenv/all/dotenv.rbi
 #
-# dotenv-2.7.6
+# dotenv-2.8.1
 
 module Dotenv
   def ignoring_nonexistent_files; end
@@ -48,9 +48,11 @@ class Dotenv::Parser
   def initialize(string, is_load = nil); end
   def parse_line(line); end
   def parse_value(value); end
+  def perform_substitutions(value, maybe_quote); end
   def self.call(string, is_load = nil); end
   def self.substitutions; end
   def unescape_characters(value); end
+  def unescape_value(value, maybe_quote); end
   def variable_not_set?(line); end
 end
 class Dotenv::Environment < Hash

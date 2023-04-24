@@ -11,10 +11,7 @@ class TasksController < ApplicationController
   # GET /tasks
   def index
     @tasks =
-      query_base.limit(page_sort_params[:limit])
-                .offset(page_sort_params[:offset])
-                .order(page_sort_params[:order])
-                .all
+      query_base.limit(page_sort_params[:limit]).offset(page_sort_params[:offset]).order(page_sort_params[:order]).all
     render json: @tasks, status: :ok, adapter: :json
   end
 

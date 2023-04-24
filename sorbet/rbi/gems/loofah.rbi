@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/loofah/all/loofah.rbi
 #
-# loofah-2.12.0
+# loofah-2.20.0
 
 module Loofah
   def self.document(*args, &block); end
@@ -34,10 +34,15 @@ module Loofah::LibxmlWorkarounds
 end
 module Loofah::HTML5::Scrub
   def self.allowed_element?(element_name); end
+  def self.cdata_escape(node); end
+  def self.cdata_needs_escaping?(node); end
+  def self.escape_tags(string); end
   def self.force_correct_attribute_escaping!(node); end
+  def self.scrub_attribute_that_allows_local_ref(attr_node); end
   def self.scrub_attributes(node); end
   def self.scrub_css(style); end
   def self.scrub_css_attribute(node); end
+  def self.scrub_uri_attribute(attr_node); end
 end
 class Loofah::ScrubberNotFound < RuntimeError
 end

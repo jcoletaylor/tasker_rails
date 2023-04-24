@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rspec-support/all/rspec-support.rbi
 #
-# rspec-support-3.10.2
+# rspec-support-3.12.0
 
 module RSpec
   extend RSpec::Support::Warnings
@@ -63,6 +63,7 @@ module RSpec::Support::Ruby
 end
 module RSpec::Support::RubyFeatures
   def caller_locations_supported?; end
+  def distincts_kw_args_from_positional_hash?; end
   def fork_supported?; end
   def kw_args_supported?; end
   def module_prepends_supported?; end
@@ -71,6 +72,7 @@ module RSpec::Support::RubyFeatures
   def required_kw_args_supported?; end
   def ripper_supported?; end
   def self.caller_locations_supported?; end
+  def self.distincts_kw_args_from_positional_hash?; end
   def self.fork_supported?; end
   def self.kw_args_supported?; end
   def self.module_prepends_supported?; end

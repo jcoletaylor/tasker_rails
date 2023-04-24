@@ -5,9 +5,9 @@
 #
 # If you would like to make changes to this file, great! Please create the gem's shim here:
 #
-#   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/nokogiri-1.12.3-x86_64/all/nokogiri-1.12.3-x86_64.rbi
+#   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/nokogiri-1.14.3-arm64/all/nokogiri-1.14.3-arm64.rbi
 #
-# nokogiri-1.12.3-x86_64-darwin
+# nokogiri-1.14.3-arm64-darwin
 
 class Nokogiri::XML::ElementContent
   def c1; end
@@ -25,8 +25,10 @@ class Nokogiri::EncodingHandler
   def self.alias(arg0, arg1); end
   def self.clear_aliases!; end
   def self.delete(arg0); end
+  def self.install_default_aliases; end
 end
 class Nokogiri::XML::Namespace
+  def deconstruct_keys(keys); end
   def document; end
   def href; end
   def inspect_attributes; end
@@ -40,7 +42,6 @@ class Nokogiri::XML::NodeSet
   def -(arg0); end
   def <<(arg0); end
   def ==(other); end
-  def >(selector); end
   def [](*arg0); end
   def add_class(name); end
   def after(datum); end
@@ -52,6 +53,7 @@ class Nokogiri::XML::NodeSet
   def children; end
   def clone; end
   def css(*args); end
+  def deconstruct; end
   def delete(arg0); end
   def document; end
   def document=(arg0); end
@@ -87,7 +89,7 @@ class Nokogiri::XML::NodeSet
   def to_xhtml(*args); end
   def to_xml(*args); end
   def unlink; end
-  def wrap(html); end
+  def wrap(node_or_tags); end
   def xpath(*args); end
   def |(arg0); end
   include Enumerable
@@ -97,6 +99,7 @@ class Nokogiri::XML::Reader
   def attribute(arg0); end
   def attribute_at(arg0); end
   def attribute_count; end
+  def attribute_hash; end
   def attribute_nodes; end
   def attributes; end
   def attributes?; end
@@ -236,7 +239,6 @@ class Nokogiri::XML::Node
   def <<(node_or_tags); end
   def <=>(other); end
   def ==(other); end
-  def >(selector); end
   def [](name); end
   def []=(name, value); end
   def accept(visitor); end
@@ -276,6 +278,7 @@ class Nokogiri::XML::Node
   def create_external_subset(arg0, arg1, arg2); end
   def create_internal_subset(arg0, arg1, arg2); end
   def css_path; end
+  def deconstruct_keys(keys); end
   def decorate!; end
   def default_namespace=(url); end
   def delete(name); end
@@ -299,6 +302,7 @@ class Nokogiri::XML::Node
   def get_attribute(name); end
   def has_attribute?(arg0); end
   def html?; end
+  def html_standard_serialize(arg0); end
   def in_context(arg0, arg1); end
   def initialize(name, document); end
   def inner_html(options = nil); end
@@ -342,6 +346,7 @@ class Nokogiri::XML::Node
   def path; end
   def pointer_id; end
   def prepend_child(node_or_tags); end
+  def prepend_newline?; end
   def previous; end
   def previous=(node_or_tags); end
   def previous_element; end
@@ -373,7 +378,7 @@ class Nokogiri::XML::Node
   def unlink; end
   def value?(value); end
   def values; end
-  def wrap(html); end
+  def wrap(node_or_tags); end
   def write_format_to(save_option, io, options); end
   def write_html_to(io, options = nil); end
   def write_to(io, *options); end
@@ -381,11 +386,13 @@ class Nokogiri::XML::Node
   def write_xml_to(io, options = nil); end
   def xml?; end
   include Enumerable
+  include Nokogiri::ClassResolver
   include Nokogiri::XML::PP::Node
   include Nokogiri::XML::Searchable
 end
 class Nokogiri::XML::Attr < Nokogiri::XML::Node
   def content=(arg0); end
+  def deconstruct_keys(keys); end
   def inspect_attributes; end
   def self.new(*arg0); end
   def to_s; end
@@ -448,16 +455,17 @@ class Nokogiri::XML::CDATA < Nokogiri::XML::Text
 end
 class Nokogiri::XML::DocumentFragment < Nokogiri::XML::Node
   def css(*args); end
+  def deconstruct; end
   def dup; end
   def errors; end
   def errors=(things); end
   def fragment(data); end
-  def initialize(document, tags = nil, ctx = nil); end
+  def initialize(document, tags = nil, ctx = nil, options = nil); end
   def name; end
   def namespace_declarations(ctx); end
   def search(*rules); end
   def self.new(*arg0); end
-  def self.parse(tags); end
+  def self.parse(tags, options = nil, &block); end
   def serialize; end
   def to_html(*args); end
   def to_s; end
@@ -475,6 +483,7 @@ class Nokogiri::XML::Document < Nokogiri::XML::Node
   def create_element(name, *contents_or_attrs, &block); end
   def create_entity(*arg0); end
   def create_text_node(string, &block); end
+  def deconstruct_keys(keys); end
   def decorate(node); end
   def decorators(key); end
   def document; end
@@ -487,6 +496,8 @@ class Nokogiri::XML::Document < Nokogiri::XML::Node
   def initialize(*args); end
   def inspect_attributes; end
   def name; end
+  def namespace_inheritance; end
+  def namespace_inheritance=(arg0); end
   def namespaces; end
   def remove_namespaces!; end
   def root; end
@@ -501,6 +512,7 @@ class Nokogiri::XML::Document < Nokogiri::XML::Node
   def url; end
   def validate; end
   def version; end
+  def xpath_doctype; end
 end
 class Nokogiri::HTML4::Document < Nokogiri::XML::Document
   def fragment(tags = nil); end
@@ -516,10 +528,11 @@ class Nokogiri::HTML4::Document < Nokogiri::XML::Document
   def title; end
   def title=(text); end
   def type; end
+  def xpath_doctype; end
 end
 module Nokogiri::Gumbo
   def self.fragment(arg0, arg1, arg2, arg3, arg4, arg5); end
-  def self.parse(arg0, arg1, arg2, arg3, arg4); end
+  def self.parse(arg0, arg1, arg2, arg3, arg4, arg5); end
 end
 module Nokogiri::Test
   def self.__foreign_error_handler; end
@@ -533,6 +546,7 @@ module Nokogiri
   def self.XSLT(stylesheet, modules = nil); end
   def self.install_default_aliases; end
   def self.jruby?; end
+  def self.libxml2_patches; end
   def self.make(input = nil, opts = nil, &blk); end
   def self.parse(string, url = nil, encoding = nil, options = nil); end
   def self.uses_gumbo?; end
@@ -561,13 +575,16 @@ class Nokogiri::VersionInfo
   extend Singleton::SingletonClassMethods
   include Singleton
 end
+module Nokogiri::ClassResolver
+  def related_class(class_name); end
+end
 class Nokogiri::SyntaxError < StandardError
 end
 module Nokogiri::XML
   def self.Reader(string_or_io, url = nil, encoding = nil, options = nil); end
   def self.RelaxNG(string_or_io, options = nil); end
   def self.Schema(string_or_io, options = nil); end
-  def self.fragment(string); end
+  def self.fragment(string, options = nil, &block); end
   def self.parse(thing, url = nil, encoding = nil, options = nil, &block); end
 end
 module Nokogiri::XML::PP
@@ -582,6 +599,8 @@ module Nokogiri::XML::PP::CharacterData
 end
 class Nokogiri::XML::ParseOptions
   def ==(other); end
+  def big_lines; end
+  def big_lines?; end
   def compact; end
   def compact?; end
   def default_html; end
@@ -604,6 +623,7 @@ class Nokogiri::XML::ParseOptions
   def inspect; end
   def nobasefix; end
   def nobasefix?; end
+  def nobig_lines; end
   def noblanks; end
   def noblanks?; end
   def nocdata; end
@@ -691,7 +711,7 @@ class Nokogiri::XML::SAX::Parser
   def parse_io(io, encoding = nil); end
   def parse_memory(data); end
 end
-class Anonymous_Struct_33 < Struct
+class Anonymous_Struct_34 < Struct
   def localname; end
   def localname=(_); end
   def prefix; end
@@ -705,11 +725,12 @@ class Anonymous_Struct_33 < Struct
   def value; end
   def value=(_); end
 end
-class Nokogiri::XML::SAX::Parser::Attribute < Anonymous_Struct_33
+class Nokogiri::XML::SAX::Parser::Attribute < Anonymous_Struct_34
 end
 module Nokogiri::XML::Searchable
   def %(*args); end
   def /(*args); end
+  def >(selector); end
   def at(*args); end
   def at_css(*args); end
   def at_xpath(*args); end
@@ -795,6 +816,7 @@ class Nokogiri::XML::Builder
   def self.with(root, &block); end
   def text(string); end
   def to_xml(*args); end
+  include Nokogiri::ClassResolver
 end
 class Nokogiri::XML::Builder::NodeBuilder
   def [](k); end
@@ -802,7 +824,7 @@ class Nokogiri::XML::Builder::NodeBuilder
   def initialize(node, doc_builder); end
   def method_missing(method, *args, &block); end
 end
-class Anonymous_Struct_34 < Struct
+class Anonymous_Struct_35 < Struct
   def name; end
   def name=(_); end
   def public_id; end
@@ -814,13 +836,13 @@ class Anonymous_Struct_34 < Struct
   def system_id; end
   def system_id=(_); end
 end
-class Nokogiri::XML::Notation < Anonymous_Struct_34
+class Nokogiri::XML::Notation < Anonymous_Struct_35
 end
 module Nokogiri::HTML4
-  def self.fragment(string, encoding = nil); end
+  def self.fragment(string, encoding = nil, options = nil, &block); end
   def self.parse(input, url = nil, encoding = nil, options = nil, &block); end
 end
-class Anonymous_Struct_35 < Struct
+class Anonymous_Struct_36 < Struct
   def description; end
   def description=(_); end
   def name; end
@@ -832,30 +854,30 @@ class Anonymous_Struct_35 < Struct
   def value; end
   def value=(_); end
 end
-class Nokogiri::HTML4::EntityDescription < Anonymous_Struct_35
+class Nokogiri::HTML4::EntityDescription < Anonymous_Struct_36
 end
-class Nokogiri::HTML4::Document::EncodingFound < StandardError
-  def found_encoding; end
-  def initialize(encoding); end
+class Nokogiri::HTML4::DocumentFragment < Nokogiri::XML::DocumentFragment
+  def initialize(document, tags = nil, ctx = nil, options = nil); end
+  def self.parse(tags, encoding = nil, options = nil, &block); end
 end
-class Nokogiri::HTML4::Document::EncodingReader
+class Nokogiri::HTML4::EncodingReader
   def encoding_found; end
   def initialize(io); end
   def read(len); end
   def self.detect_encoding(chunk); end
 end
-class Nokogiri::HTML4::Document::EncodingReader::SAXHandler < Nokogiri::XML::SAX::Document
+class Nokogiri::HTML4::EncodingReader::EncodingFound < StandardError
+  def found_encoding; end
+  def initialize(encoding); end
+end
+class Nokogiri::HTML4::EncodingReader::SAXHandler < Nokogiri::XML::SAX::Document
   def encoding; end
   def initialize; end
   def start_element(name, attrs = nil); end
 end
-class Nokogiri::HTML4::Document::EncodingReader::JumpSAXHandler < Nokogiri::HTML4::Document::EncodingReader::SAXHandler
+class Nokogiri::HTML4::EncodingReader::JumpSAXHandler < Nokogiri::HTML4::EncodingReader::SAXHandler
   def initialize(jumptag); end
   def start_element(name, attrs = nil); end
-end
-class Nokogiri::HTML4::DocumentFragment < Nokogiri::XML::DocumentFragment
-  def initialize(document, tags = nil, ctx = nil); end
-  def self.parse(tags, encoding = nil); end
 end
 module Nokogiri::HTML4::SAX
 end
@@ -917,7 +939,7 @@ class Nokogiri::CSS::Node
   def initialize(type, value); end
   def to_a; end
   def to_type; end
-  def to_xpath(prefix = nil, visitor = nil); end
+  def to_xpath(prefix, visitor); end
   def type; end
   def type=(arg0); end
   def value; end
@@ -925,12 +947,14 @@ class Nokogiri::CSS::Node
 end
 class Nokogiri::CSS::XPathVisitor
   def accept(node); end
+  def config; end
   def css_class(hay, needle); end
-  def css_class_builtin(hay, needle); end
-  def css_class_standard(hay, needle); end
+  def html5_element_name_needs_namespace_handling(node); end
+  def initialize(builtins: nil, doctype: nil); end
   def is_of_type_pseudo_class?(node); end
   def nth(node, options = nil); end
   def read_a_and_positive_b(values); end
+  def visit_attrib_name(node); end
   def visit_attribute_condition(node); end
   def visit_child_selector(node); end
   def visit_class_condition(node); end
@@ -945,70 +969,78 @@ class Nokogiri::CSS::XPathVisitor
   def visit_not(node); end
   def visit_pseudo_class(node); end
 end
-class Nokogiri::CSS::XPathVisitorAlwaysUseBuiltins < Nokogiri::CSS::XPathVisitor
-  def css_class(hay, needle); end
+module Nokogiri::CSS::XPathVisitor::BuiltinsConfig
 end
-class Nokogiri::CSS::XPathVisitorOptimallyUseBuiltins < Nokogiri::CSS::XPathVisitor
-  def css_class(hay, needle); end
+module Nokogiri::CSS::XPathVisitor::DoctypeConfig
+end
+module Nokogiri::CSS::XPathVisitorAlwaysUseBuiltins
+  def self.new; end
+end
+module Nokogiri::CSS::XPathVisitorOptimallyUseBuiltins
+  def self.new; end
 end
 class Nokogiri::CSS::Parser < Racc::Parser
   def _reduce_1(val, _values, result); end
+  def _reduce_10(val, _values, result); end
   def _reduce_11(val, _values, result); end
-  def _reduce_12(val, _values, result); end
   def _reduce_13(val, _values, result); end
   def _reduce_14(val, _values, result); end
   def _reduce_15(val, _values, result); end
-  def _reduce_16(val, _values, result); end
+  def _reduce_17(val, _values, result); end
   def _reduce_18(val, _values, result); end
+  def _reduce_19(val, _values, result); end
   def _reduce_2(val, _values, result); end
-  def _reduce_20(val, _values, result); end
   def _reduce_21(val, _values, result); end
-  def _reduce_22(val, _values, result); end
   def _reduce_23(val, _values, result); end
+  def _reduce_24(val, _values, result); end
   def _reduce_25(val, _values, result); end
   def _reduce_26(val, _values, result); end
-  def _reduce_27(val, _values, result); end
   def _reduce_28(val, _values, result); end
   def _reduce_29(val, _values, result); end
   def _reduce_3(val, _values, result); end
   def _reduce_30(val, _values, result); end
   def _reduce_31(val, _values, result); end
   def _reduce_32(val, _values, result); end
-  def _reduce_33(val, _values, result); end
   def _reduce_34(val, _values, result); end
   def _reduce_35(val, _values, result); end
   def _reduce_36(val, _values, result); end
   def _reduce_37(val, _values, result); end
+  def _reduce_38(val, _values, result); end
+  def _reduce_39(val, _values, result); end
   def _reduce_4(val, _values, result); end
   def _reduce_40(val, _values, result); end
   def _reduce_41(val, _values, result); end
   def _reduce_42(val, _values, result); end
-  def _reduce_43(val, _values, result); end
-  def _reduce_44(val, _values, result); end
   def _reduce_45(val, _values, result); end
+  def _reduce_47(val, _values, result); end
   def _reduce_48(val, _values, result); end
   def _reduce_49(val, _values, result); end
   def _reduce_5(val, _values, result); end
   def _reduce_50(val, _values, result); end
   def _reduce_51(val, _values, result); end
-  def _reduce_52(val, _values, result); end
+  def _reduce_54(val, _values, result); end
+  def _reduce_55(val, _values, result); end
+  def _reduce_56(val, _values, result); end
+  def _reduce_57(val, _values, result); end
   def _reduce_58(val, _values, result); end
-  def _reduce_59(val, _values, result); end
   def _reduce_6(val, _values, result); end
-  def _reduce_60(val, _values, result); end
-  def _reduce_61(val, _values, result); end
-  def _reduce_63(val, _values, result); end
   def _reduce_64(val, _values, result); end
   def _reduce_65(val, _values, result); end
   def _reduce_66(val, _values, result); end
   def _reduce_67(val, _values, result); end
-  def _reduce_68(val, _values, result); end
   def _reduce_69(val, _values, result); end
   def _reduce_7(val, _values, result); end
   def _reduce_70(val, _values, result); end
+  def _reduce_71(val, _values, result); end
+  def _reduce_72(val, _values, result); end
+  def _reduce_73(val, _values, result); end
+  def _reduce_74(val, _values, result); end
+  def _reduce_75(val, _values, result); end
+  def _reduce_76(val, _values, result); end
   def _reduce_8(val, _values, result); end
   def _reduce_9(val, _values, result); end
   def _reduce_none(val, _values, result); end
+  def cache_key(query, prefix, visitor); end
   def initialize(namespaces = nil); end
   def next_token; end
   def on_error(error_token_id, error_value, value_stack); end
@@ -1021,7 +1053,7 @@ class Nokogiri::CSS::Parser < Racc::Parser
   def self.without_cache(&block); end
   def unescape_css_identifier(identifier); end
   def unescape_css_string(str); end
-  def xpath_for(string, options = nil); end
+  def xpath_for(string, prefix, visitor); end
 end
 class Nokogiri::CSS::Tokenizer
   def _next_token; end
@@ -1042,23 +1074,26 @@ end
 class Nokogiri::CSS::SyntaxError < Nokogiri::SyntaxError
 end
 module Nokogiri::HTML5
-  def self.escape_text(text, encoding, attribute_mode); end
   def self.fragment(string, encoding = nil, **options); end
   def self.get(uri, options = nil); end
   def self.get_impl(uri, options = nil); end
   def self.parse(string, url = nil, encoding = nil, **options, &block); end
-  def self.prepend_newline?(node); end
   def self.read_and_encode(string, encoding); end
   def self.reencode(body, content_type = nil); end
-  def self.serialize_node_internal(current_node, io, encoding, options); end
+end
+module Nokogiri::HTML5::QuirksMode
 end
 class Nokogiri::HTML5::Document < Nokogiri::HTML4::Document
-  def fragment(tags = nil); end
+  def fragment(markup = nil); end
+  def initialize(*args); end
+  def quirks_mode; end
   def self.do_parse(string_or_io, url, encoding, options); end
   def self.parse(string_or_io, url = nil, encoding = nil, **options, &block); end
   def self.read_io(io, url = nil, encoding = nil, **options); end
   def self.read_memory(string, url = nil, encoding = nil, **options); end
   def to_xml(options = nil, &block); end
+  def url; end
+  def xpath_doctype; end
 end
 class Nokogiri::HTML5::DocumentFragment < Nokogiri::HTML4::DocumentFragment
   def document; end
@@ -1067,6 +1102,7 @@ class Nokogiri::HTML5::DocumentFragment < Nokogiri::HTML4::DocumentFragment
   def errors=(arg0); end
   def extract_params(params); end
   def initialize(doc, tags = nil, ctx = nil, options = nil); end
+  def quirks_mode; end
   def self.parse(tags, encoding = nil, options = nil); end
   def serialize(options = nil, &block); end
 end

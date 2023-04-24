@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/erubi/all/erubi.rbi
 #
-# erubi-1.10.0
+# erubi-1.12.0
 
 module Erubi
   def self.h(value); end
@@ -24,4 +24,6 @@ class Erubi::Engine
   def handle(indicator, code, tailch, rspace, lspace); end
   def initialize(input, properties = nil); end
   def src; end
+  def terminate_expression; end
+  def with_buffer; end
 end

@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/json-schema/all/json-schema.rbi
 #
-# json-schema-2.8.1
+# json-schema-3.0.0
 
 class ArraySet < Array
   def convert_to_float_if_numeric(value); end
@@ -110,7 +110,7 @@ class JSON::Validator
   def handle_schema(parent_schema, obj); end
   def initialize(schema_data, data, opts = nil); end
   def initialize_data(data); end
-  def initialize_schema(schema); end
+  def initialize_schema(schema, default_validator); end
   def load_ref_schema(parent_schema, ref); end
   def schema_from_fragment(base_schema, fragment); end
   def self.add_schema(schema); end
@@ -195,6 +195,9 @@ class JSON::Schema::DependenciesAttribute < JSON::Schema::Attribute
   def self.accept_value?(value); end
   def self.validate(current_schema, data, fragments, processor, validator, options = nil); end
   def self.validate_dependency(schema, data, property, value, fragments, processor, attribute, options); end
+end
+class JSON::Schema::ConstAttribute < JSON::Schema::Attribute
+  def self.validate(current_schema, data, fragments, processor, validator, options = nil); end
 end
 class JSON::Schema::EnumAttribute < JSON::Schema::Attribute
   def self.validate(current_schema, data, fragments, processor, validator, options = nil); end

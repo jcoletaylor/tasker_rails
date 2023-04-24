@@ -3,6 +3,8 @@
 require:
   - rubocop-performance
   - rubocop-rails
+  - rubocop-graphql
+  - rubocop-rspec
 
 AllCops:
   EnabledByDefault: true

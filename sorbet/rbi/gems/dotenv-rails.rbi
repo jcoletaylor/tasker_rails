@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/dotenv-rails/all/dotenv-rails.rbi
 #
-# dotenv-rails-2.7.6
+# dotenv-rails-2.8.1
 
 module Dotenv
 end

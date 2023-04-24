@@ -11,10 +11,7 @@ class WorkflowStepsController < ApplicationController
   # GET /workflow_steps
   def index
     @workflow_steps =
-      query_base.limit(page_sort_params[:limit])
-                .offset(page_sort_params[:offset])
-                .order(page_sort_params[:order])
-                .all
+      query_base.limit(page_sort_params[:limit]).offset(page_sort_params[:offset]).order(page_sort_params[:order]).all
 
     render json: @workflow_steps, status: :ok, adapter: :json
   end

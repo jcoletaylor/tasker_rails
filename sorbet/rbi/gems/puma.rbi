@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/puma/all/puma.rbi
 #
-# puma-5.4.0
+# puma-5.6.5
 
 class Puma::HttpParser
   def body; end
@@ -42,6 +42,7 @@ module Puma
   def self.forkable?; end
   def self.jruby?; end
   def self.mri?; end
+  def self.osx?; end
   def self.set_thread_name(name); end
   def self.ssl?; end
   def self.stats; end
@@ -67,10 +68,8 @@ class Puma::MiniSSL::Socket
   def initialize(socket, engine); end
   def peeraddr; end
   def peercert; end
-  def read_and_drop(timeout = nil); end
   def read_nonblock(size, *_); end
   def readpartial(size); end
-  def should_drop_bytes?; end
   def ssl_version_state; end
   def syswrite(data); end
   def to_io; end
@@ -82,10 +81,15 @@ class Puma::MiniSSL::Context
   def ca=(ca); end
   def cert; end
   def cert=(cert); end
+  def cert_pem; end
+  def cert_pem=(cert_pem); end
   def check; end
+  def check_file(file, desc); end
   def initialize; end
   def key; end
   def key=(key); end
+  def key_pem; end
+  def key_pem=(key_pem); end
   def no_tlsv1; end
   def no_tlsv1=(tlsv1); end
   def no_tlsv1_1; end
@@ -148,10 +152,41 @@ class Puma::UnsupportedOption < RuntimeError
 end
 module Puma::Const
 end
+module Puma::Util
+  def escape(s, encoding = nil); end
+  def nakayoshi_gc(events); end
+  def parse_query(qs, d = nil, &unescaper); end
+  def pipe; end
+  def purge_interrupt_queue; end
+  def self.escape(s, encoding = nil); end
+  def self.nakayoshi_gc(events); end
+  def self.parse_query(qs, d = nil, &unescaper); end
+  def self.pipe; end
+  def self.purge_interrupt_queue; end
+  def self.unescape(s, encoding = nil); end
+  def unescape(s, encoding = nil); end
+end
+class Puma::Util::HeaderHash < Hash
+  def [](k); end
+  def []=(k, v); end
+  def delete(k); end
+  def each; end
+  def has_key?(k); end
+  def include?(k); end
+  def initialize(hash = nil); end
+  def key?(k); end
+  def member?(k); end
+  def merge!(other); end
+  def merge(other); end
+  def replace(other); end
+  def self.new(hash = nil); end
+  def to_hash; end
+end
 class Puma::DSL
   def _load_from(path); end
   def _offer_plugins; end
   def activate_control_app(url = nil, opts = nil); end
+  def add_pem_values_to_options_store(opts); end
   def after_worker_boot(&block); end
   def after_worker_fork(&block); end
   def app(obj = nil, &block); end
@@ -204,7 +239,7 @@ class Puma::DSL
   def set_remote_address(val = nil); end
   def shutdown_debug(val = nil); end
   def silence_single_worker_warning; end
-  def ssl_bind(host, port, opts); end
+  def ssl_bind(host, port, opts = nil); end
   def state_path(path); end
   def state_permission(permission); end
   def stdout_redirect(stdout = nil, stderr = nil, append = nil); end
@@ -212,6 +247,8 @@ class Puma::DSL
   def threads(min, max); end
   def wait_for_less_busy_worker(val = nil); end
   def worker_boot_timeout(timeout); end
+  def worker_check_interval(interval); end
+  def worker_culling_strategy(strategy); end
   def worker_shutdown_timeout(timeout); end
   def worker_timeout(timeout); end
   def workers(count); end
@@ -265,6 +302,7 @@ class Puma::Configuration::ConfigMiddleware
 end
 class Puma::NullIO
   def close; end
+  def closed?; end
   def each; end
   def eof?; end
   def flush; end
@@ -376,6 +414,8 @@ module IO::WaitReadable
 end
 class Puma::ConnectionError < RuntimeError
 end
+class Puma::HttpParserError501 < IOError
+end
 class Puma::Client
   def body; end
   def call; end
@@ -385,6 +425,7 @@ class Puma::Client
   def decode_chunk(chunk); end
   def eagerly_finish; end
   def env; end
+  def expect_proxy_proto=(val); end
   def finish(timeout); end
   def hijacked; end
   def in_data_phase; end
@@ -412,36 +453,11 @@ class Puma::Client
   def timeout_at; end
   def to_io; end
   def try_to_finish; end
+  def try_to_parse_proxy_protocol; end
   def write_chunk(str); end
   def write_error(status_code); end
   extend Forwardable
   include Puma::Const
-end
-module Puma::Util
-  def nakayoshi_gc(events); end
-  def parse_query(qs, d = nil, &unescaper); end
-  def pipe; end
-  def self.nakayoshi_gc(events); end
-  def self.parse_query(qs, d = nil, &unescaper); end
-  def self.pipe; end
-  def self.unescape(s, encoding = nil); end
-  def unescape(s, encoding = nil); end
-end
-class Puma::Util::HeaderHash < Hash
-  def [](k); end
-  def []=(k, v); end
-  def delete(k); end
-  def each; end
-  def has_key?(k); end
-  def include?(k); end
-  def initialize(hash = nil); end
-  def key?(k); end
-  def member?(k); end
-  def merge!(other); end
-  def merge(other); end
-  def replace(other); end
-  def self.new(hash = nil); end
-  def to_hash; end
 end
 class Puma::MiniSSL::ContextBuilder
   def context; end
@@ -471,6 +487,8 @@ class Puma::Binder
   def listeners; end
   def listeners=(arg0); end
   def loc_addr_str(io); end
+  def localhost_authority; end
+  def localhost_authority_context; end
   def loopback_addresses; end
   def parse(binds, logger, log_msg = nil); end
   def proto_env; end
@@ -527,6 +545,7 @@ class Puma::Server
   def initialize(app, events = nil, options = nil); end
   def leak_stack_on_error; end
   def leak_stack_on_error=(arg0); end
+  def log_writer; end
   def lowlevel_error(e, env, status = nil); end
   def max_threads; end
   def max_threads=(arg0); end
@@ -561,6 +580,7 @@ class Puma::Runner
   def close_control_listeners; end
   def debug(str); end
   def development?; end
+  def ensure_output_directory_exists(path, io_name); end
   def error(str); end
   def initialize(cli, events); end
   def load_and_bind; end
@@ -573,10 +593,12 @@ class Puma::Runner
   def start_server; end
   def stop_control; end
   def test?; end
+  def wakeup!; end
 end
 class Puma::Cluster < Puma::Runner
   def all_workers_booted?; end
   def check_workers; end
+  def cull_start_index(diff); end
   def cull_workers; end
   def fork_worker!; end
   def halt; end
@@ -599,8 +621,8 @@ class Puma::Cluster < Puma::Runner
   def stop_workers; end
   def timeout_workers; end
   def wait_workers; end
-  def wakeup!; end
   def worker(index, master); end
+  def workers_to_cull(diff); end
 end
 class Puma::Cluster::WorkerHandle
   def boot!; end
@@ -619,6 +641,7 @@ class Puma::Cluster::WorkerHandle
   def ping_timeout; end
   def signal; end
   def started_at; end
+  def term!; end
   def term; end
   def term?; end
   def uptime; end
@@ -629,7 +652,6 @@ class Puma::Cluster::Worker < Puma::Runner
   def master; end
   def run; end
   def spawn_worker(idx); end
-  def wakeup!; end
 end
 class Puma::Single < Puma::Runner
   def halt; end
@@ -662,6 +684,7 @@ class Puma::Launcher
   def prune_bundler; end
   def prune_bundler?; end
   def puma_wild_location; end
+  def refork; end
   def reload_worker_directory; end
   def require_paths_for_gem(gem_spec); end
   def require_rubygems_min_version!(min_version, feature); end

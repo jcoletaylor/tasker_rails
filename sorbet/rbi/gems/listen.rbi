@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/listen/all/listen.rbi
 #
-# listen-3.7.0
+# listen-3.8.0
 
 module Listen
   def self.default_logger; end
@@ -22,7 +22,6 @@ class Listen::Options
   def respond_to_missing?(name, *_); end
 end
 class Listen::Record
-  def _auto_hash; end
   def _fast_build_dir(remaining, symlink_detector); end
   def _fast_try_file(entry); end
   def _fast_unset_path(dirname, basename); end
@@ -30,8 +29,10 @@ class Listen::Record
   def add_dir(rel_path); end
   def build; end
   def dir_entries(rel_path); end
+  def empty_dirname?(dirname); end
   def file_data(rel_path); end
   def initialize(directory, silencer); end
+  def reset_tree; end
   def root; end
   def unset_path(rel_path); end
   def update_file(rel_path, data); end

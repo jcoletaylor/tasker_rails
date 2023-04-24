@@ -7,21 +7,9 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rack-test/all/rack-test.rbi
 #
-# rack-test-1.1.0
+# rack-test-2.1.0
 
 module Rack
-end
-class Rack::MockSession
-  def after_request(&block); end
-  def clear_cookies; end
-  def cookie_jar; end
-  def cookie_jar=(arg0); end
-  def default_host; end
-  def initialize(app, default_host = nil); end
-  def last_request; end
-  def last_response; end
-  def request(uri, env); end
-  def set_cookie(cookie, uri = nil); end
 end
 module Rack::Test
   def self.encoding_aware_strings?; end
@@ -52,46 +40,35 @@ class Rack::Test::CookieJar
   def [](name); end
   def []=(name, value); end
   def delete(name); end
+  def each_cookie_for(uri); end
   def for(uri); end
   def get_cookie(name); end
-  def hash_for(uri = nil); end
   def initialize(cookies = nil, default_host = nil); end
+  def initialize_copy(other); end
   def merge(raw_cookies, uri = nil); end
   def to_hash; end
 end
-class Rack::Test::MockDigestRequest
-  def initialize(params); end
-  def method; end
-  def method_missing(sym); end
-  def response(password); end
-end
 module Rack::Test::Utils
-  def build_file_part(parameter_name, uploaded_file); end
-  def build_multipart(params, first = nil, multipart = nil); end
+  def _build_parts(buffer, parameters); end
+  def build_file_part(buffer, parameter_name, uploaded_file); end
+  def build_multipart(params, _first = nil, multipart = nil); end
   def build_nested_query(value, prefix = nil); end
-  def build_parts(parameters); end
-  def build_primitive_part(parameter_name, value); end
-  def get_parts(parameters); end
-  def self.build_file_part(parameter_name, uploaded_file); end
-  def self.build_multipart(params, first = nil, multipart = nil); end
-  def self.build_nested_query(value, prefix = nil); end
-  def self.build_parts(parameters); end
-  def self.build_primitive_part(parameter_name, value); end
-  def self.get_parts(parameters); end
-  extend Rack::Utils
+  def build_parts(buffer, parameters); end
+  def build_primitive_part(buffer, parameter_name, value); end
+  def normalize_multipart_params(params, first = nil); end
+  extend Rack::Test::Utils
   include Rack::Utils
 end
 module Rack::Test::Methods
-  def _current_session_names; end
+  def _rack_test_current_session; end
+  def _rack_test_current_session=(arg0); end
   def authorize(*args, &block); end
   def basic_authorize(*args, &block); end
-  def build_rack_mock_session; end
-  def build_rack_test_session(name); end
+  def build_rack_test_session(_name); end
   def clear_cookies(*args, &block); end
   def current_session; end
   def custom_request(*args, &block); end
   def delete(*args, &block); end
-  def digest_authorize(*args, &block); end
   def env(*args, &block); end
   def follow_redirect!(*args, &block); end
   def get(*args, &block); end
@@ -111,11 +88,12 @@ module Rack::Test::Methods
   extend Forwardable
 end
 class Rack::Test::UploadedFile
+  def append_to(buffer); end
   def content_type; end
   def content_type=(arg0); end
   def initialize(content, content_type = nil, binary = nil, original_filename: nil); end
   def initialize_from_file_path(path); end
-  def initialize_from_stringio(stringio, original_filename); end
+  def initialize_from_stringio(stringio); end
   def local_path; end
   def method_missing(method_name, *args, &block); end
   def original_filename; end
@@ -128,35 +106,37 @@ end
 class Rack::Test::Error < StandardError
 end
 class Rack::Test::Session
+  def after_request(&block); end
+  def append_query_params(query_array, query_params); end
   def authorize(username, password); end
   def basic_authorize(username, password); end
-  def clear_cookies(*args, &block); end
+  def clear_cookies; end
+  def close_body(body); end
+  def cookie_jar; end
+  def cookie_jar=(arg0); end
   def custom_request(verb, uri, params = nil, env = nil, &block); end
-  def default_env; end
+  def default_host; end
   def delete(uri, params = nil, env = nil, &block); end
-  def digest_auth_configured?; end
-  def digest_auth_header; end
-  def digest_authorize(username, password); end
   def env(name, value); end
   def env_for(uri, env); end
   def follow_redirect!; end
   def get(uri, params = nil, env = nil, &block); end
   def head(uri, params = nil, env = nil, &block); end
   def header(name, value); end
-  def headers_for_env; end
-  def initialize(mock_session); end
-  def last_request(*args, &block); end
-  def last_response(*args, &block); end
+  def initialize(app, default_host = nil); end
+  def last_request; end
+  def last_response; end
+  def multipart_content_type(env); end
   def options(uri, params = nil, env = nil, &block); end
-  def params_to_string(params); end
   def parse_uri(path, env); end
   def patch(uri, params = nil, env = nil, &block); end
   def post(uri, params = nil, env = nil, &block); end
   def process_request(uri, env); end
   def put(uri, params = nil, env = nil, &block); end
   def request(uri, env = nil, &block); end
-  def retry_with_digest_auth?(env); end
-  def set_cookie(*args, &block); end
+  def restore_state; end
+  def self.new(app, default_host = nil); end
+  def set_cookie(cookie, uri = nil); end
   extend Forwardable
   include Rack::Test::Utils
 end

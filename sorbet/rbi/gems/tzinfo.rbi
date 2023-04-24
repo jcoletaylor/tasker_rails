@@ -7,11 +7,13 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/tzinfo/all/tzinfo.rbi
 #
-# tzinfo-2.0.4
+# tzinfo-2.0.6
 
 module TZInfo
+  def self.eager_load!; end
 end
-module TZInfo::UntaintExt
+module TZInfo::RubyCoreSupport
+  def self.untaint(o); end
 end
 class TZInfo::StringDeduper
   def create_hash(&block); end
@@ -275,6 +277,7 @@ class TZInfo::DataSource
   def build_timezone_identifiers; end
   def country_codes; end
   def data_timezone_identifiers; end
+  def eager_load!; end
   def find_timezone_identifier(identifier); end
   def get_country_info(code); end
   def get_timezone_info(identifier); end

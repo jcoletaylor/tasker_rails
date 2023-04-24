@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rswag-specs/all/rswag-specs.rbi
 #
-# rswag-specs-2.4.0
+# rswag-specs-2.8.0
 
 module Rswag
 end
@@ -19,7 +19,8 @@ module Rswag::Specs::ExampleGroupHelpers
   def delete(summary, &block); end
   def deprecated(value); end
   def description(value = nil); end
-  def examples(example = nil); end
+  def example(mime, name, value, summary = nil, description = nil); end
+  def examples(examples = nil); end
   def get(summary, &block); end
   def head(summary, &block); end
   def header(name, attributes); end
@@ -31,6 +32,7 @@ module Rswag::Specs::ExampleGroupHelpers
   def post(summary, &block); end
   def produces(*value); end
   def put(summary, &block); end
+  def request_body_example(value:, summary: nil, name: nil); end
   def response(code, description, metadata = nil, &block); end
   def run_test!(&block); end
   def schema(value); end
@@ -44,9 +46,10 @@ class Rswag::Specs::RequestFactory
   def add_path(request, metadata, swagger_doc, parameters, example); end
   def add_payload(request, parameters, example); end
   def add_verb(request, metadata); end
+  def base_path_from_servers(swagger_doc, use_server = nil); end
   def build_form_payload(parameters, example); end
   def build_json_payload(parameters, example); end
-  def build_query_string_part(param, value); end
+  def build_query_string_part(param, value, swagger_doc); end
   def build_request(metadata, example); end
   def definition_version(swagger_doc); end
   def derive_security_params(metadata, swagger_doc); end
@@ -57,11 +60,14 @@ class Rswag::Specs::RequestFactory
   def resolve_parameter(ref, swagger_doc); end
   def security_version(scheme_names, swagger_doc); end
 end
+class Rswag::Specs::MissingParameterError < StandardError
+  def body_param; end
+  def initialize(body_param); end
+  def message; end
+end
 class Rswag::Specs::ExtendedSchema < JSON::Schema::Draft4
   def initialize; end
-end
-class Rswag::Specs::ExtendedTypeAttribute < JSON::Schema::TypeV4Attribute
-  def self.validate(current_schema, data, fragments, processor, validator, options = nil); end
+  def validate(current_schema, data, *arg2); end
 end
 class Rswag::Specs::ResponseValidator
   def definitions_or_component_schemas(swagger_doc, version); end

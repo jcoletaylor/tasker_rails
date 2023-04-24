@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/annotate/all/annotate.rbi
 #
-# annotate-3.1.1
+# annotate-3.2.0
 
 module Annotate
   def self.bootstrap_rake; end
@@ -29,12 +29,10 @@ module AnnotateModels
   def self.columns(klass, options); end
   def self.do_annotations(options = nil); end
   def self.expand_glob_into_files(glob); end
-  def self.factory_files(root_directory); end
-  def self.files_by_pattern(root_directory, pattern_type, options); end
   def self.final_index_string(index, max_size); end
   def self.final_index_string_in_markdown(index); end
-  def self.fixture_files(root_directory); end
   def self.format_default(col_name, max_size, col_type, bare_type_allowance, attrs); end
+  def self.get_attributes(column, column_type, klass, options); end
   def self.get_col_type(col); end
   def self.get_foreign_key_info(klass, options = nil); end
   def self.get_index_info(klass, options = nil); end
@@ -71,25 +69,28 @@ module AnnotateModels
   def self.retrieve_indexes_from_table(klass); end
   def self.root_dir; end
   def self.root_dir=(arg0); end
-  def self.scaffold_files(root_directory); end
   def self.schema_default(klass, column); end
-  def self.serialize_files(root_directory); end
+  def self.skip_subdirectory_model_load; end
+  def self.skip_subdirectory_model_load=(arg0); end
   def self.split_model_dir(option_value); end
-  def self.test_files(root_directory); end
   def self.translated_columns(klass); end
   def self.width(string); end
   def self.with_comments?(klass, options); end
+end
+module AnnotateModels::FilePatterns
+  def self.factory_files(root_directory); end
+  def self.fixture_files(root_directory); end
+  def self.generate(root_directory, pattern_type, options); end
+  def self.scaffold_files(root_directory); end
+  def self.serialize_files(root_directory); end
+  def self.test_files(root_directory); end
 end
 class AnnotateModels::BadModelFileError < LoadError
   def to_s; end
 end
 module AnnotateRoutes
   def self.annotate_routes(header, content, header_position, options = nil); end
-  def self.app_routes_map(options); end
-  def self.comment(row = nil); end
-  def self.content(line, maxs, options = nil); end
   def self.do_annotations(options = nil); end
-  def self.header(options = nil); end
   def self.remove_annotations(_options = nil); end
   def self.rewrite_contents(existing_text, new_text); end
   def self.routes_file; end
@@ -100,6 +101,20 @@ module AnnotateRoutes::Helpers
   def self.extract_magic_comments_from_array(content_array); end
   def self.real_content_and_header_position(real_content, header_position); end
   def self.strip_annotations(content); end
+end
+class AnnotateRoutes::HeaderGenerator
+  def comment(row = nil); end
+  def content(line, maxs); end
+  def format_line_element(elem, maxs, index); end
+  def generate; end
+  def initialize(options, routes_map); end
+  def markdown?; end
+  def options; end
+  def routes_map; end
+  def self.generate(options = nil); end
+  def self.new(*arg0); end
+  def self.routes_map(options); end
+  def timestamp_if_required(time = nil); end
 end
 class Annotate::Helpers
   def self.fallback(*args); end
